@@ -23,6 +23,7 @@ public class Man10JackpotCommand implements CommandExecutor {
         plugin.playersInMenu.add(p);
         plugin.someOneInMenu = true;
         plugin.playerMenuPage.put(p,1);
+        plugin.playerMenuState.put(p,"main");
         plugin.game.openInventory(p,plugin.game.setUpMainInv(p));
         return false;
     }

@@ -18,13 +18,16 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10JackpotCommand mjp = new Man10JackpotCommand(this);
     public Man10JackpotGame game = new Man10JackpotGame(this);
     public Man10JackpotListener listener = new Man10JackpotListener(this);
+    public Man10JackpotMenu menu = new Man10JackpotMenu(this);
 
     public List<Player> playersInMenu = new ArrayList<>();
 
     public List<ItemStack> dummy = new ArrayList<>();
 
+
     public HashMap<Player,String> playerMenuState = new HashMap<>();
     public HashMap<Player,Integer> playerMenuPage = new HashMap<>();
+    public HashMap<Player,String> playerCalcValue = new HashMap<>();
 
 
 
@@ -40,7 +43,7 @@ public final class Man10Jackpot extends JavaPlugin {
     }
 
     public void createDummy(){
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 300; i++){
             ItemStack item = new ItemStack(Material.SKULL_ITEM,1);
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setDisplayName(String.valueOf(i));
