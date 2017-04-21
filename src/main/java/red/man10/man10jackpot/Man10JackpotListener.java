@@ -54,8 +54,8 @@ public class Man10JackpotListener implements Listener {
             }
             if(e.getSlot() == 49){
                 plugin.playerMenuState.remove(p);
-                plugin.playerMenuState.put(p,"bet");
                 plugin.menu.betMenuInv(p);
+                plugin.playerMenuState.put(p,"bet");
                 e.setCancelled(true);
             }
             if (e.getSlot() == 48) {
@@ -80,54 +80,92 @@ public class Man10JackpotListener implements Listener {
             return;
         }
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
+            int[] slots = {19,20,21,28,29,30,37,38,39,46,48};
             Inventory inv = e.getInventory();
-            if(inv.getItem(8) != null){
-                plugin.menu.moveDisplay(inv);
-            }
             String val = "";
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7§lBET")){
+                e.setCancelled(true);
+                return;
+            }
+            if(e.getInventory() == null){
+                e.setCancelled(true);
+                return;
+            }
+            if(e.getSlot() == -999){
+                return;
+            }
+            if(e.getCurrentItem().getType() == Material.AIR){
+                e.setCancelled(true);
+                return;
+            }
+            if(e.getSlot() == 50){
+                //bet button
+
+                e.setCancelled(true);
+                return;
+            }
+            if(e.getSlot() == 52 ){
+                e.getWhoClicked().closeInventory();
+                e.setCancelled(true);
+                return;
+            }
+            if(e.getInventory().getItem(0) != null){
+                p.sendMessage(plugin.prefix + "掛け金の上限です");
+                e.setCancelled(true);
+                return;
+            }
             if(e.getSlot() == 19){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(19));
-                
+
                 val = "7";
             }
             if(e.getSlot() == 20){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(20));
-                
+
                 val = "8";
             }
             if(e.getSlot() == 21){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(21));
-                
+
                 val = "9";
             }
             if(e.getSlot() == 28){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(28));
-                
+
                 val = "4";
             }
             if(e.getSlot() == 29){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(29));
-                
+
                 val = "5";
             }
             if(e.getSlot() == 30){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(30));
-                
+
                 val = "6";
             }
             if(e.getSlot() == 37){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(37));
-                
+
                 val = "1";
             }
             if(e.getSlot() == 38){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(38));
-                
+
                 val = "2";
             }
             if(e.getSlot() == 39){
+                moveD(inv);
                 inv.setItem(8,inv.getItem(39));
-                
+
                 val = "3";
             }
             if(e.getSlot() == 46){
@@ -135,8 +173,9 @@ public class Man10JackpotListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
+                moveD(inv);
                 inv.setItem(8,inv.getItem(46));
-                
+
                 val = "0";
             }
             if(e.getSlot() == 48){
@@ -149,8 +188,14 @@ public class Man10JackpotListener implements Listener {
                 plugin.playerCalcValue.put(p,"");
             }
             plugin.playerCalcValue.put(p,plugin.playerCalcValue.get(p) + val);
-            p.sendMessage(plugin.playerCalcValue.get(p));
             e.setCancelled(true);
+            val = "";
+        }
+    }
+
+    public void moveD(Inventory inv){
+        if(inv.getItem(8) != null){
+            plugin.menu.moveDisplay(inv);
         }
     }
 
@@ -164,6 +209,7 @@ public class Man10JackpotListener implements Listener {
             return;
         }
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
+            plugin.playerCalcValue.remove(p);
             return;
         }
         plugin.playersInMenu.remove(p);

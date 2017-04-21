@@ -31,6 +31,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
 
 
+    public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
 
     public boolean someOneInMenu = false;
     @Override
