@@ -30,6 +30,11 @@ public class Man10JackpotCommand implements CommandExecutor {
                 p.openInventory(plugin.gameMenu);
                 return true;
             }
+            if(args[0].equalsIgnoreCase("runnable")){
+                p.openInventory(plugin.gameMenu);
+                plugin.runnable.onSpin();
+                return true;
+            }
         }
         plugin.playersInMenu.add(p);
         plugin.someOneInMenu = true;

@@ -25,6 +25,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public Inventory gameMenu = Bukkit.createInventory(null,54,"ゲーム");
 
+    public Man10JackpotRunnable runnable = new Man10JackpotRunnable(this);
     public Man10JackpotCommand mjp = new Man10JackpotCommand(this);
     public Man10JackpotGame game = new Man10JackpotGame(this);
     public Man10JackpotListener listener = new Man10JackpotListener(this);
@@ -32,7 +33,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public List<Player> playersInMenu = new ArrayList<>();
     public List<Player> playersInGame = new ArrayList<>();
-
+    public List<UUID> chanceInGame = new ArrayList<>();
     public List<ItemStack> dummy = new ArrayList<>();
 
 
@@ -81,6 +82,9 @@ public final class Man10Jackpot extends JavaPlugin {
             BetInfo getBet = uuidToBetInfo.get(p.getUniqueId());
             getBet.ammount = getBet.ammount + ammount;
             uuidToBetInfo.put(p.getUniqueId(),getBet);
+            for(int i = 0; i < ammount; i++){
+                chanceInGame.add(p.getUniqueId());
+            }
             return;
         }
         BetInfo betInfo = new BetInfo();
@@ -90,6 +94,9 @@ public final class Man10Jackpot extends JavaPlugin {
         betInfo.uuid = p.getUniqueId();
         uuidToBetInfo.put(p.getUniqueId(), betInfo);
         playersInGame.add(p);
+        for(int i = 0; i < ammount; i++){
+            chanceInGame.add(p.getUniqueId());
+        }
         return;
     }
 
