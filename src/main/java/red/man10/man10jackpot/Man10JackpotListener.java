@@ -1,6 +1,5 @@
 package red.man10.man10jackpot;
 
-import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -105,14 +104,15 @@ public class Man10JackpotListener implements Listener {
                 //bet button
                 if(plugin.playerCalcValue.get(p) == null){
                     p.sendMessage(plugin.prefix + "購入は1口以上からです");
-                    return;
-                }
-                if(plugin.vault.getBalance(p.getUniqueId()) < Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p)) * plugin.ticket_price)){
-                    p.sendMessage("十分な所持金を持っていません");
                     e.setCancelled(true);
                     return;
                 }
-
+                if(plugin.vault.getBalance(p.getUniqueId()) < Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p)) * plugin.ticket_price)){
+                    p.sendMessage(plugin.prefix + "十分な所持金を持っていません");
+                    e.setCancelled(true);
+                    return;
+                }
+                plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
                 e.setCancelled(true);
                 return;
             }

@@ -76,4 +76,5 @@ public class Man10JackpotGame {
         p.openInventory(inv);
     }
 
+
 }

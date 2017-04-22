@@ -12,8 +12,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public final class Man10Jackpot extends JavaPlugin {
+
+    class BetInfo{
+        Player player;
+        String name;
+        UUID uuid;
+        double ammount;
+    }
+
+    public Inventory gameMenu = Bukkit.createInventory(null,54,"ゲーム");
 
     public Man10JackpotCommand mjp = new Man10JackpotCommand(this);
     public Man10JackpotGame game = new Man10JackpotGame(this);
@@ -21,10 +31,12 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10JackpotMenu menu = new Man10JackpotMenu(this);
 
     public List<Player> playersInMenu = new ArrayList<>();
+    public List<Player> playersInGame = new ArrayList<>();
 
     public List<ItemStack> dummy = new ArrayList<>();
 
 
+    public HashMap<UUID,BetInfo> uuidToBetInfo = new HashMap<>();
     public HashMap<Player,String> playerMenuState = new HashMap<>();
     public HashMap<Player,Integer> playerMenuPage = new HashMap<>();
     public HashMap<Player,String> playerCalcValue = new HashMap<>();
@@ -39,6 +51,7 @@ public final class Man10Jackpot extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        menu.setUpGameMenu();
         getCommand("mjackpot").setExecutor(mjp);
         createDummy();
         vault = new VaultManager(this);
@@ -61,6 +74,29 @@ public final class Man10Jackpot extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    public void placeBet(Player p,double ammount){
+        if(playersInGame.contains(p)){
+            BetInfo getBet = uuidToBetInfo.get(p.getUniqueId());
+            getBet.ammount = getBet.ammount + ammount;
+            uuidToBetInfo.put(p.getUniqueId(),getBet);
+            return;
+        }
+        BetInfo betInfo = new BetInfo();
+        betInfo.ammount = ammount;
+        betInfo.name = p.getName();
+        betInfo.player = p;
+        betInfo.uuid = p.getUniqueId();
+        uuidToBetInfo.put(p.getUniqueId(), betInfo);
+        playersInGame.add(p);
+        return;
+    }
+
+    public void list(Player p){
+        for(Player player : playersInGame){
+            BetInfo bet = uuidToBetInfo.get(player.getUniqueId());
+        }
     }
 
 

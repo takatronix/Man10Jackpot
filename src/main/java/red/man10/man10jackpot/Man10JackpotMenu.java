@@ -138,4 +138,20 @@ public class Man10JackpotMenu {
         }
         return item;
     }
+
+    public void setUpGameMenu(){
+        Inventory inv = plugin.gameMenu;
+        ItemStack redGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 14);
+        ItemStack greyGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 15);
+        ItemMeta greyMeta = greyGlass.getItemMeta();
+        greyMeta.setDisplayName(" ");
+        greyGlass.setItemMeta(greyMeta);
+        redGlass.setItemMeta(greyMeta);
+        int[] grey = {0,1,2,3,5,6,7,8,9,17,18,20,21,23,24,26,27,29,33,35,36,38,42,44,45,47,51,53};
+        for(int i = 0;i < grey.length; i++){
+            inv.setItem(grey[i], greyGlass);
+        }
+        inv.setItem(4,redGlass);
+        inv.setItem(22, redGlass);
+    }
 }

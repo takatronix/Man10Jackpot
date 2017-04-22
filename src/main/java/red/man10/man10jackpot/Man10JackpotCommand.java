@@ -20,6 +20,17 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player)sender;
+        if(args.length == 1){
+            if(args[0].equalsIgnoreCase("list")){
+                plugin.list(p);
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("menu")){
+                plugin.menu.setUpGameMenu();
+                p.openInventory(plugin.gameMenu);
+                return true;
+            }
+        }
         plugin.playersInMenu.add(p);
         plugin.someOneInMenu = true;
         plugin.playerMenuPage.put(p,1);
