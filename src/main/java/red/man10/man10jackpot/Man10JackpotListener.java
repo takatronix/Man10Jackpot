@@ -1,5 +1,6 @@
 package red.man10.man10jackpot;
 
+import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +9,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
 
 /**
  * Created by sho-pc on 2017/04/19.
@@ -80,13 +84,8 @@ public class Man10JackpotListener implements Listener {
             return;
         }
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
-            int[] slots = {19,20,21,28,29,30,37,38,39,46,48};
             Inventory inv = e.getInventory();
             String val = "";
-            if(e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7§lBET")){
-                e.setCancelled(true);
-                return;
-            }
             if(e.getInventory() == null){
                 e.setCancelled(true);
                 return;
@@ -98,8 +97,21 @@ public class Man10JackpotListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
+            if(e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7§lBET")){
+                e.setCancelled(true);
+                return;
+            }
             if(e.getSlot() == 50){
                 //bet button
+                if(plugin.playerCalcValue.get(p) == null){
+                    p.sendMessage(plugin.prefix + "購入は1口以上からです");
+                    return;
+                }
+                if(plugin.vault.getBalance(p.getUniqueId()) < Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p)) * plugin.ticket_price)){
+                    p.sendMessage("十分な所持金を持っていません");
+                    e.setCancelled(true);
+                    return;
+                }
 
                 e.setCancelled(true);
                 return;
@@ -182,15 +194,29 @@ public class Man10JackpotListener implements Listener {
                 for (int i = 0; i < 9; i++){
                     inv.setItem(i, new ItemStack(Material.AIR));
                 }
-                plugin.playerCalcValue.put(p,"");
+                plugin.playerCalcValue.put(p,null);
+                ItemMeta itemMeta = inv.getItem(50).getItemMeta();
+                itemMeta.setLore(null);
+                inv.getItem(50).setItemMeta(itemMeta);
+                e.setCancelled(true);
+                return;
             }
             if(plugin.playerCalcValue.get(p) == null){
                 plugin.playerCalcValue.put(p,"");
             }
             plugin.playerCalcValue.put(p,plugin.playerCalcValue.get(p) + val);
+            changeConfirmPrice(e.getInventory(),p);
             e.setCancelled(true);
-            val = "";
         }
+    }
+
+
+
+    public void changeConfirmPrice(Inventory inv,Player p){
+        String[] lore = {"§e§l" + plugin.playerCalcValue.get(p) + "口","§e§l" + String.valueOf(Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p))) * Integer.valueOf(plugin.ticket_price)) + "円"};
+        ItemMeta buttonMeta = inv.getItem(50).getItemMeta();
+        buttonMeta.setLore(Arrays.asList(lore));
+        inv.getItem(50).setItemMeta(buttonMeta);
     }
 
     public void moveD(Inventory inv){
@@ -206,6 +232,9 @@ public class Man10JackpotListener implements Listener {
         }
         Player p = (Player) e.getPlayer();
         if(!plugin.playersInMenu.contains(p)){
+            return;
+        }
+        if(!plugin.playerMenuState.containsKey(p)){
             return;
         }
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){

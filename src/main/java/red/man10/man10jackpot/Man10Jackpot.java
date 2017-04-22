@@ -29,7 +29,9 @@ public final class Man10Jackpot extends JavaPlugin {
     public HashMap<Player,Integer> playerMenuPage = new HashMap<>();
     public HashMap<Player,String> playerCalcValue = new HashMap<>();
 
+    public VaultManager vault = null;
 
+    public int ticket_price = 0;
 
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
 
@@ -39,7 +41,10 @@ public final class Man10Jackpot extends JavaPlugin {
         // Plugin startup logic
         getCommand("mjackpot").setExecutor(mjp);
         createDummy();
+        vault = new VaultManager(this);
         Bukkit.getPluginManager().registerEvents(listener,this);
+        saveDefaultConfig();
+        ticket_price = getConfig().getInt("ticket_price");
 
     }
 
