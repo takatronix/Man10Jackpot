@@ -112,6 +112,9 @@ public class Man10JackpotListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
+                //bet
+                //bet
+                //bet
                 plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
                 e.setCancelled(true);
                 return;

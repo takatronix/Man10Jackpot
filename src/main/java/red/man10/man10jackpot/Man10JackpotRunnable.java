@@ -3,6 +3,7 @@ package red.man10.man10jackpot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Random;
@@ -17,30 +18,34 @@ public class Man10JackpotRunnable {
         this.plugin = plugin;
     }
 
+
     public void onSpin(){
         new BukkitRunnable(){
             Inventory inv = plugin.gameMenu;
+            int[] slot = {52,43,34,25,16,15,14,13,12,11,10,19,28,37,46};
+            int count = 0;
+            //int[] slots = {46,37,28,19,10,11,12,13,14,15,16,25,34,43,52};
+            ItemStack[] slotsWithHead = new ItemStack[15];
             @Override
             public void run() {
                 Random r = new Random();
                 int result = r.nextInt(plugin.chanceInGame.size());
-                Player p = Bukkit.getPlayer(plugin.chanceInGame.get(result));
-                inv.setItem(46,inv.getItem(37));
-                inv.setItem(37,inv.getItem(28));
-                inv.setItem(28,inv.getItem(19));
-                inv.setItem(19,inv.getItem(10));
-                inv.setItem(10,inv.getItem(11));
-                inv.setItem(11,inv.getItem(12));
-                inv.setItem(12,inv.getItem(13));
-                inv.setItem(13,inv.getItem(14));
-                inv.setItem(14,inv.getItem(15));
-                inv.setItem(15,inv.getItem(16));
-                inv.setItem(16,inv.getItem(25));
-                inv.setItem(25,inv.getItem(34));
-                inv.setItem(34,inv.getItem(43));
-                inv.setItem(43,inv.getItem(52));
-                inv.setItem(52,new SkullMaker().withOwner(p.getName()).build());
+                inv.setItem(52, plugin.idToHeadItem.get(plugin.chanceInGame.get(result)));
+                for(int i = 0; i < slotsWithHead.length; i++){
+                    slotsWithHead[i] = inv.getItem(slot[i]);
+                    //inv.setItem(slot[i], inv.getItem(slot[i + 1]));
+                }
+                for(int i = 0; i < slotsWithHead.length - 1; i++){
+                    inv.setItem(slot[i + 1],slotsWithHead[i]);
+                }
+                for(int i = 0; i < slotsWithHead.length - 1; i ++){
+                    Bukkit.getServer().broadcastMessage(slot[i] + slotsWithHead[i].getItemMeta().getDisplayName());
+                }
+
+                String s = "";
+                Bukkit.getServer().broadcastMessage(s);
+
             }
-        }.runTaskTimer(plugin,0,2);
+        }.runTaskTimer(plugin,0,3);
     }
 }

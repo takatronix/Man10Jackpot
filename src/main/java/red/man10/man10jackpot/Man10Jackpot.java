@@ -25,6 +25,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public Inventory gameMenu = Bukkit.createInventory(null,54,"ゲーム");
 
+
     public Man10JackpotRunnable runnable = new Man10JackpotRunnable(this);
     public Man10JackpotCommand mjp = new Man10JackpotCommand(this);
     public Man10JackpotGame game = new Man10JackpotGame(this);
@@ -33,9 +34,13 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public List<Player> playersInMenu = new ArrayList<>();
     public List<Player> playersInGame = new ArrayList<>();
-    public List<UUID> chanceInGame = new ArrayList<>();
+    public List<Integer> chanceInGame = new ArrayList<>();
     public List<ItemStack> dummy = new ArrayList<>();
 
+
+    public HashMap<Integer,ItemStack> idToHeadItem = new HashMap<>();
+    public HashMap<Integer,UUID> idToUUID = new HashMap<>();
+    public HashMap<UUID,Integer> UUIDToId = new HashMap<>();
 
     public HashMap<UUID,BetInfo> uuidToBetInfo = new HashMap<>();
     public HashMap<Player,String> playerMenuState = new HashMap<>();
@@ -83,10 +88,14 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.ammount = getBet.ammount + ammount;
             uuidToBetInfo.put(p.getUniqueId(),getBet);
             for(int i = 0; i < ammount; i++){
-                chanceInGame.add(p.getUniqueId());
+                chanceInGame.add(UUIDToId.get(p.getUniqueId()));
             }
             return;
         }
+        int ammountOfPlayer = playersInGame.size();
+        idToUUID.put(ammountOfPlayer + 1,p.getUniqueId());
+        UUIDToId.put(p.getUniqueId(),ammountOfPlayer + 1);
+        idToHeadItem.put(ammountOfPlayer + 1,new SkullMaker().withOwner(p.getName()).withName(p.getName()).build());
         BetInfo betInfo = new BetInfo();
         betInfo.ammount = ammount;
         betInfo.name = p.getName();
@@ -95,7 +104,7 @@ public final class Man10Jackpot extends JavaPlugin {
         uuidToBetInfo.put(p.getUniqueId(), betInfo);
         playersInGame.add(p);
         for(int i = 0; i < ammount; i++){
-            chanceInGame.add(p.getUniqueId());
+            chanceInGame.add(ammountOfPlayer + 1);
         }
         return;
     }

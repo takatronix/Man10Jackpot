@@ -1,5 +1,6 @@
 package red.man10.man10jackpot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,12 @@ public class Man10JackpotCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("runnable")){
                 p.openInventory(plugin.gameMenu);
                 plugin.runnable.onSpin();
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("bet")){
+                plugin.placeBet(p,100);
+                Player player = Bukkit.getPlayer("hashing_bot");
+                plugin.placeBet(player,100);
                 return true;
             }
         }
