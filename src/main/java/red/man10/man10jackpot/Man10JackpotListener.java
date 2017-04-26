@@ -1,5 +1,6 @@
 package red.man10.man10jackpot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,14 +44,14 @@ public class Man10JackpotListener implements Listener {
                 return;
             }
             if (e.getSlot() == 50) {
-                if (plugin.dummy.size() < 36) {
+                if (plugin.itemList.size() < 36) {
                     e.setCancelled(true);
                     return;
                 }
                 int r = plugin.playerMenuPage.get(p) + 1;
                 plugin.playerMenuPage.put(p, r);
                 for (int i = 0; i < 36; i++) {
-                    e.getInventory().setItem(i, plugin.dummy.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
+                    e.getInventory().setItem(i, plugin.itemList.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
                 }
                 e.setCancelled(true);
                 return;
@@ -66,14 +67,14 @@ public class Man10JackpotListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                if (plugin.dummy.size() < 36) {
+                if (plugin.itemList.size() < 36) {
                     e.setCancelled(true);
                     return;
                 }
                 int r = plugin.playerMenuPage.get(p) - 1;
                 plugin.playerMenuPage.put(p, r);
                 for (int i = 0; i < 36; i++) {
-                    e.getInventory().setItem(i, plugin.dummy.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
+                    e.getInventory().setItem(i, plugin.itemList.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
                 }
 
                 e.setCancelled(true);
@@ -115,8 +116,15 @@ public class Man10JackpotListener implements Listener {
                 //bet
                 //bet
                 //bet
-                plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
                 e.setCancelled(true);
+                p.sendMessage(plugin.prefix + "ベットしました");
+                plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
+                p.closeInventory();
+                plugin.playersInMenu.add(p);
+                plugin.someOneInMenu = true;
+                plugin.playerMenuPage.put(p,1);
+                plugin.playerMenuState.put(p,"main");
+                plugin.game.openInventory(p,plugin.game.setUpMainInv(p));
                 return;
             }
             if(e.getSlot() == 52 ){
@@ -243,6 +251,19 @@ public class Man10JackpotListener implements Listener {
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
             plugin.playerCalcValue.remove(p);
             return;
+        }
+        if(plugin.playerMenuState.get(p).equalsIgnoreCase("dev")){
+            plugin.playersInMenu.remove(p);
+            plugin.playerMenuPage.remove(p);
+            if(plugin.playersInMenu.isEmpty()){
+                plugin.someOneInMenu = false;
+            }
+            for(int i = 0;i < e.getInventory().getSize(); i++){
+                ItemStack item = new ItemStack(e.getInventory().getItem(i));
+                String name = item.getType().name();
+                int damage = item.getDurability();
+                Bukkit.getServer().broadcastMessage("new ItemStack(Material." + name + ",1,(short) " + damage + "),");
+            }
         }
         plugin.playersInMenu.remove(p);
         plugin.playerMenuPage.remove(p);

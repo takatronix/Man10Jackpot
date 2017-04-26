@@ -60,14 +60,14 @@ public class Man10JackpotGame {
         inv.setItem(50,rightArrow);
 
         int rep = 0;
-        if(plugin.dummy.size() > 36){
+        if(plugin.itemList.size() > 36){
             rep = 36;
         }
-        if(plugin.dummy.size() < 36){
-            rep = plugin.dummy.size();
+        if(plugin.itemList.size() < 36){
+            rep = plugin.itemList.size();
         }
         for(int i = 0; i < rep; i++){
-            inv.setItem(i,plugin.dummy.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
+            inv.setItem(i,plugin.itemList.get((plugin.playerMenuPage.get(p) - 1) * 36 + i));
         }
 
         return inv;
@@ -75,6 +75,7 @@ public class Man10JackpotGame {
     public void openInventory(Player p,Inventory inv){
         p.openInventory(inv);
     }
+
 
 
 }
