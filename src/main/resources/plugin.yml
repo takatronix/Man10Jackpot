@@ -6,3 +6,4 @@ description: Man10Jackpot plugin
 website: man10.red
 commands:
  mjackpot:
+ mj:

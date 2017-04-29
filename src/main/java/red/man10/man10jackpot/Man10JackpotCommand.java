@@ -22,6 +22,10 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player)sender;
+        if(plugin.inGame == true){
+            p.openInventory(plugin.gameMenu);
+            return true;
+        }
         if(args.length == 1){
             if(args[0].equalsIgnoreCase("list")){
                 p.sendMessage(String.valueOf(plugin.totalBetInt));

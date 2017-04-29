@@ -27,6 +27,14 @@ public class Man10JackpotRunnable {
         new BukkitRunnable(){
             @Override
             public void run() {
+                if(plugin.time == 0){
+                    cancel();
+                    plugin.inGame = true;
+                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + plugin.totalBetInt * plugin.ticket_price + "§5§kA");
+                    plugin.menu.setUpGameMenu();
+                    plugin.openSpinMenuForPlayer();
+                    return;
+                }
                 if(plugin.someOneInMenu == true) {
                     for (int i = 0; i < plugin.playersInMenu.size(); i++) {
                         if (plugin.playerMenuState.get(plugin.playersInMenu.get(i)).equalsIgnoreCase("main")) {
@@ -55,17 +63,45 @@ public class Man10JackpotRunnable {
             //int[] slot = {52,43,34,25,16,15,14,13,12,11,10,19,28,37,46};
             int[] slot = {46,37,28,19,10,11,12,13,14,15,16,25,34,43,52};
             //ItemStack[] slotsWithHead = new ItemStack[15];
+            int count = 0;
+            int require = 0;
+            int mainCount = 0;
             @Override
             public void run() {
-                Random r = new Random();
-                int result = r.nextInt(plugin.chanceInGame.size());
-                Random rand = new Random();
-                inv.setItem(52, plugin.idToItem.get(plugin.chanceInGame.get(result)));
-                for(int i = 0; i < slot.length - 1; i++){
-                  //  slotsWithHead[i] = inv.getItem(slot[i]);
-                    inv.setItem(slot[i], inv.getItem(slot[i + 1]));
+                if(require < count) {
+                    Bukkit.getServer().broadcastMessage(String.valueOf(mainCount));
+                    require++;
+                    count = 0;
+                    Random r = new Random();
+                    if(mainCount < 80){
+                        require--;
+                    }
+                    if(mainCount > 80){
+                        require++;
+                    }
+                    if(mainCount > 90){
+                        require = require + 2;
+                    }
+                    if(mainCount > 200){
+                        cancel();
+                        plugin.inGame = false;
+                        for(int i = 0; i < plugin.playersInMenu.size(); i++){
+                            Player p = plugin.playersInMenu.get(i);
+                            p.closeInventory();
+                        }
+                    }
+                    int result = r.nextInt(plugin.chanceInGame.size());
+                    inv.setItem(52, plugin.idToItem.get(plugin.chanceInGame.get(result)));
+                    for (int i = 0; i < slot.length - 1; i++) {
+                        //  slotsWithHead[i] = inv.getItem(slot[i]);
+                        inv.setItem(slot[i], inv.getItem(slot[i + 1]));
+                    }
+                    mainCount++;
+                    return;
                 }
+                mainCount++;
+                count++;
             }
-        }.runTaskTimer(plugin,0,1);
+        }.runTaskTimer(plugin,0,0);
     }
 }

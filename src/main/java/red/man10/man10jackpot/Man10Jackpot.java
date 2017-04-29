@@ -22,10 +22,11 @@ public final class Man10Jackpot extends JavaPlugin {
         double ammount;
     }
 
-    public Inventory gameMenu = Bukkit.createInventory(null,54,"ゲーム");
+    public Inventory gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:");
 
     public int totalBetInt = 0;
-    public int time = 10;
+    public int time = 20;
+
 
     public Man10JackpotRunnable runnable = new Man10JackpotRunnable(this);
     public Man10JackpotCommand mjp = new Man10JackpotCommand(this);
@@ -59,12 +60,14 @@ public final class Man10Jackpot extends JavaPlugin {
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
 
     public boolean timerStarted = false;
+    public boolean inGame = false;
     public boolean someOneInMenu = false;
     @Override
     public void onEnable() {
         // Plugin startup logic
         menu.setUpGameMenu();
         getCommand("mjackpot").setExecutor(mjp);
+        getCommand("mj").setExecutor(mjp);
         Bukkit.getPluginManager().registerEvents(listener,this);
         saveDefaultConfig();
         icon.setUpIcon();
@@ -189,6 +192,25 @@ public final class Man10Jackpot extends JavaPlugin {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public void openSpinMenuForPlayer(){
+        if(playersInMenu.size() != 0) {
+            for (int i = 0; i < playersInMenu.size(); i++) {
+                Player p = playersInMenu.get(i);
+                p.closeInventory();
+                p.openInventory(gameMenu);
+                playersInMenu.add(p);
+            }
+        }
+        for(int i = 0; i < playersInGame.size(); i++){
+            Player p = playersInGame.get(i);
+            p.closeInventory();
+            p.openInventory(gameMenu);
+            playersInMenu.add(p);
+        }
+        someOneInMenu = true;
+        runnable.onSpin();
     }
 
 

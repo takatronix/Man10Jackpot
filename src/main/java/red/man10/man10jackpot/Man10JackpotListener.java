@@ -33,6 +33,9 @@ public class Man10JackpotListener implements Listener {
         if (!plugin.playersInMenu.contains(p)) {
             return;
         }
+        if(plugin.inGame == true){
+            e.setCancelled(true);
+        }
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("main")){
             if (e.getSlot() == 53) {
                 p.closeInventory();
