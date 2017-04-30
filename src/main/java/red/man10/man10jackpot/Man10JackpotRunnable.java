@@ -2,6 +2,7 @@ package red.man10.man10jackpot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +37,7 @@ public class Man10JackpotRunnable {
                     return;
                 }
                 if(plugin.someOneInMenu == true) {
-                    for (int i = 0; i < plugin.playersInMenu.size(); i++) {
+                    for (int i = 0; i < plugin.playersInMenu.size() - 1; i++) {
                         if (plugin.playerMenuState.get(plugin.playersInMenu.get(i)).equalsIgnoreCase("main")) {
                             Player p = plugin.playersInMenu.get(i);
                             ItemStack item = p.getOpenInventory().getItem(47);
@@ -62,6 +63,7 @@ public class Man10JackpotRunnable {
             Inventory inv = plugin.gameMenu;
             //int[] slot = {52,43,34,25,16,15,14,13,12,11,10,19,28,37,46};
             int[] slot = {46,37,28,19,10,11,12,13,14,15,16,25,34,43,52};
+            int[] record = new int[8];
             //ItemStack[] slotsWithHead = new ItemStack[15];
             int count = 0;
             int require = 0;
@@ -69,7 +71,6 @@ public class Man10JackpotRunnable {
             @Override
             public void run() {
                 if(require < count) {
-                    Bukkit.getServer().broadcastMessage(String.valueOf(mainCount));
                     require++;
                     count = 0;
                     Random r = new Random();
@@ -85,17 +86,30 @@ public class Man10JackpotRunnable {
                     if(mainCount > 200){
                         cancel();
                         plugin.inGame = false;
-                        for(int i = 0; i < plugin.playersInMenu.size(); i++){
-                            Player p = plugin.playersInMenu.get(i);
-                            p.closeInventory();
-                        }
+                        Bukkit.getServer().broadcastMessage(plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[1])).name + "が勝ちました");
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                            public void run() {
+                                for(int i = 0; i < plugin.playersInMenu.size(); i++){
+                                    Player p = plugin.playersInMenu.get(i);
+                                    p.closeInventory();
+                                }
+                            }
+                        },60);
                     }
                     int result = r.nextInt(plugin.chanceInGame.size());
-                    inv.setItem(52, plugin.idToItem.get(plugin.chanceInGame.get(result)));
                     for (int i = 0; i < slot.length - 1; i++) {
                         //  slotsWithHead[i] = inv.getItem(slot[i]);
                         inv.setItem(slot[i], inv.getItem(slot[i + 1]));
                     }
+                    for(int i = 0; i < record.length - 1;i++){
+                        record[i] = record[i + 1];
+                    }
+                    String s = "";
+                    for(int i = 0; i < record.length; i++){
+                        s = s + record[i];
+                    }
+                    record[7] = plugin.chanceInGame.get(result);
+                    inv.setItem(52, plugin.idToItem.get(plugin.chanceInGame.get(result)));
                     mainCount++;
                     return;
                 }

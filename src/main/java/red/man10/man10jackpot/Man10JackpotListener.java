@@ -100,7 +100,7 @@ public class Man10JackpotListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if(e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7§lBET")){
+            if(e.getCurrentItem().getItemMeta().getDisplayName().contains("BET")){
                 e.setCancelled(true);
                 return;
             }
