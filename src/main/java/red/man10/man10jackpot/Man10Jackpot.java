@@ -56,6 +56,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public VaultManager vault = null;
 
     public int ticket_price = 0;
+    public long totalBet = 0;
 
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
 
@@ -106,6 +107,8 @@ public final class Man10Jackpot extends JavaPlugin {
             refreshPercentage();
             startTimer(ammountOfPlayer);
             refreshMenu();
+            totalBet = totalBetInt * ticket_price;
+            vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
             return;
         }
         idToUUID.put(ammountOfPlayer + 1,p.getUniqueId());
@@ -134,6 +137,8 @@ public final class Man10Jackpot extends JavaPlugin {
         refreshPercentage();
         startTimer(ammountOfPlayer);
         refreshMenu();
+        totalBet = totalBetInt * ticket_price;
+        vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
         return;
     }
     public void startTimer(int ammount){
@@ -213,5 +218,24 @@ public final class Man10Jackpot extends JavaPlugin {
         runnable.onSpin();
     }
 
+    public void refreshGame(){
+        totalBetInt = 0;
+        totalBet = 0;
+        playersInGame.clear();
+        playersInMenu.clear();
+        chanceInGame.clear();
+        playerUUIDInGame.clear();
+        idToItem.clear();
+        idToUUID.clear();
+        UUIDToId.clear();
+
+        itemList.clear();
+
+        UUIDToBetInfo.clear();
+        playerMenuPage.clear();
+        playerMenuPage.clear();
+        playerCalcValue.clear();
+
+    }
 
 }

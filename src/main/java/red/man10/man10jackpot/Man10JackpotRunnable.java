@@ -31,7 +31,8 @@ public class Man10JackpotRunnable {
                 if(plugin.time == 0){
                     cancel();
                     plugin.inGame = true;
-                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + plugin.totalBetInt * plugin.ticket_price + "§5§kA");
+                    plugin.totalBet = plugin.totalBetInt * plugin.ticket_price;
+                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + plugin.totalBet + "§5§kA");
                     plugin.menu.setUpGameMenu();
                     plugin.openSpinMenuForPlayer();
                     return;
@@ -86,15 +87,19 @@ public class Man10JackpotRunnable {
                     if(mainCount > 200){
                         cancel();
                         plugin.inGame = false;
-                        Bukkit.getServer().broadcastMessage(plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[1])).name + "が勝ちました");
+
+                        Bukkit.getServer().broadcastMessage(plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0])).name + "が勝ちました");
+                        plugin.vault.deposit(plugin.idToUUID.get(record[0]),Double.valueOf(plugin.totalBet));
                         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             public void run() {
                                 for(int i = 0; i < plugin.playersInMenu.size(); i++){
                                     Player p = plugin.playersInMenu.get(i);
                                     p.closeInventory();
                                 }
+                                plugin.refreshGame();
                             }
                         },60);
+                        return;
                     }
                     int result = r.nextInt(plugin.chanceInGame.size());
                     for (int i = 0; i < slot.length - 1; i++) {
