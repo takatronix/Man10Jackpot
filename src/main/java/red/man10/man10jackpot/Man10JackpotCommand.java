@@ -33,6 +33,10 @@ public class Man10JackpotCommand implements CommandExecutor {
 
                 return true;
             }
+            if(args[0].equalsIgnoreCase("cancel")){
+                plugin.cancelGame();
+                return true;
+            }
             if(args[0].equalsIgnoreCase("menu")){
                 plugin.menu.setUpGameMenu();
                 p.openInventory(plugin.gameMenu);
@@ -56,6 +60,13 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.playerMenuState.put(p,"dev");
                 Inventory inv = Bukkit.createInventory(null,54,"put items");
                 p.openInventory(inv);
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("reload")){
+                plugin.reloadConfig();
+                plugin.tax = plugin.getConfig().getInt("tax_percentage");
+                plugin.ticket_price = plugin.getConfig().getInt("ticket_price");
+                p.sendMessage(plugin.prefix + "リロードが完了しました");
                 return true;
             }
         }

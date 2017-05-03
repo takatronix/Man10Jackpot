@@ -32,29 +32,31 @@ public class Man10JackpotRunnable {
                     cancel();
                     plugin.inGame = true;
                     plugin.totalBet = plugin.totalBetInt * plugin.ticket_price;
-                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + plugin.totalBet + "§5§kA");
+                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + Double.valueOf(plugin.totalBet) + "§5§kA");
                     plugin.menu.setUpGameMenu();
                     plugin.openSpinMenuForPlayer();
                     return;
                 }
                 if(plugin.someOneInMenu == true) {
-                    for (int i = 0; i < plugin.playersInMenu.size() - 1; i++) {
+                    if(plugin.playersInMenu.size() == 0 || plugin.playersInMenu == null){
+                        return;
+                    }
+                    for (int i = 0; i < plugin.playersInMenu.size(); i++) {
                         if (plugin.playerMenuState.get(plugin.playersInMenu.get(i)).equalsIgnoreCase("main")) {
                             Player p = plugin.playersInMenu.get(i);
-                            ItemStack item = p.getOpenInventory().getItem(47);
-                            if(item != null) {
+                                ItemStack item = new ItemStack(Material.WATCH);
                                 ItemMeta itemMeta = item.getItemMeta();
+                                itemMeta.setDisplayName("§d§l残り時間");
                                 String[] lore = {"§a§l====================", "§d残り" + plugin.time + "秒", "§a§l===================="};
                                 itemMeta.setLore(Arrays.asList(lore));
                                 item.setItemMeta(itemMeta);
                                 p.getOpenInventory().setItem(47, item);
-                            }
                         }
                     }
                     plugin.time--;
-                }else{
-                    plugin.time--;
+                    return;
                 }
+                plugin.time--;
             }
         }.runTaskTimer(plugin,0,20);
     }
@@ -87,13 +89,19 @@ public class Man10JackpotRunnable {
                     if(mainCount > 200){
                         cancel();
                         plugin.inGame = false;
-
-                        Bukkit.getServer().broadcastMessage(plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0])).name + "が勝ちました");
-                        plugin.vault.deposit(plugin.idToUUID.get(record[0]),Double.valueOf(plugin.totalBet));
+                        Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
+                        double winRate = (bet.ammount/plugin.totalBetInt)*100;
+                        Bukkit.getServer().broadcastMessage("§e" + bet.name + "§bさんが§e" + plugin.round(winRate,2) + "%§bの確率でで§e" + plugin.totalBet + "§b円勝ち取りました");
+                        double payout = plugin.totalBet * ((100 - plugin.tax)/100);
+                       plugin.vault.deposit(plugin.idToUUID.get(record[0]),payout);
                         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             public void run() {
-                                for(int i = 0; i < plugin.playersInMenu.size(); i++){
-                                    Player p = plugin.playersInMenu.get(i);
+                                for(int i = 0; i < plugin.playersInGame.size(); i++){
+                                    Player p = plugin.playersInGame.get(i);
+                                    p.closeInventory();
+                                }
+                                for(int i = 0; i < plugin.playersInGame.size(); i++){
+                                    Player p = plugin.playersInGame.get(i);
                                     p.closeInventory();
                                 }
                                 plugin.refreshGame();

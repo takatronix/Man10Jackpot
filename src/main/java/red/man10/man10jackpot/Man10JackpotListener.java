@@ -89,6 +89,10 @@ public class Man10JackpotListener implements Listener {
         if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
             Inventory inv = e.getInventory();
             String val = "";
+            if(e.getCurrentItem() == null){
+                e.setCancelled(true);
+                return;
+            }
             if(e.getInventory() == null){
                 e.setCancelled(true);
                 return;
@@ -119,15 +123,8 @@ public class Man10JackpotListener implements Listener {
                 //bet
                 //bet
                 //bet
-                e.setCancelled(true);
-                p.sendMessage(plugin.prefix + "ベットしました");
                 plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
-                p.closeInventory();
-                plugin.playersInMenu.add(p);
-                plugin.someOneInMenu = true;
-                plugin.playerMenuPage.put(p,1);
-                plugin.playerMenuState.put(p,"main");
-                plugin.game.openInventory(p,plugin.game.setUpMainInv(p));
+                e.setCancelled(true);
                 return;
             }
             if(e.getSlot() == 52 ){

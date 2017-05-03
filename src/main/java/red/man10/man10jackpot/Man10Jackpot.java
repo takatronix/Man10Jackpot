@@ -63,6 +63,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public boolean timerStarted = false;
     public boolean inGame = false;
     public boolean someOneInMenu = false;
+    public double tax = 0;
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -74,6 +75,7 @@ public final class Man10Jackpot extends JavaPlugin {
         icon.setUpIcon();
         ticket_price = getConfig().getInt("ticket_price");
         vault = new VaultManager(this);
+        tax = getConfig().getInt("tax_percentage");
 
     }
 
@@ -81,6 +83,15 @@ public final class Man10Jackpot extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        for(int i = 0; i < playersInGame.size(); i++){
+            Player p = playersInGame.get(i);
+            p.closeInventory();
+        }
+        for(int i = 0; i < playersInGame.size(); i++){
+            Player p = playersInGame.get(i);
+            p.closeInventory();
+        }
+        cancelGame();
     }
 
     public void placeBet(Player p,double ammount){
@@ -104,11 +115,13 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            refreshPercentage();
             startTimer(ammountOfPlayer);
-            refreshMenu();
             totalBet = totalBetInt * ticket_price;
             vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
+            p.sendMessage(prefix + "ベットしました");
+            refreshPercentage();
+            refreshMenu();
+            openMainMenuForPlayer(p);
             return;
         }
         idToUUID.put(ammountOfPlayer + 1,p.getUniqueId());
@@ -132,13 +145,15 @@ public final class Man10Jackpot extends JavaPlugin {
         itemList.add(item);
         for(int i = 0; i < ammount; i++){
             chanceInGame.add(ammountOfPlayer + 1);
+            totalBetInt++;
         }
-        totalBetInt = ((int) (totalBetInt + ammount));
-        refreshPercentage();
         startTimer(ammountOfPlayer);
-        refreshMenu();
         totalBet = totalBetInt * ticket_price;
         vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
+        refreshPercentage();
+        refreshMenu();
+        openMainMenuForPlayer(p);
+        p.sendMessage(prefix + "ベットしました");
         return;
     }
     public void startTimer(int ammount){
@@ -149,20 +164,29 @@ public final class Man10Jackpot extends JavaPlugin {
         runnable.onStartTimer();
     }
 
+    public void openMainMenuForPlayer(Player p){
+        p.closeInventory();
+        p.closeInventory();
+        playersInMenu.add(p);
+        someOneInMenu = true;
+        playerMenuPage.put(p, 1);
+        playerMenuState.put(p, "main");
+        game.openInventory(p, game.setUpMainInv(p));
+    }
+
     public void refreshMenu(){
         if(someOneInMenu == false){
             return;
         }
         for(int i = 0; i < playersInMenu.size(); i++){
             Player p = playersInMenu.get(i);
-            if(playerMenuState.get(p).equalsIgnoreCase("main")){
+            if(p.getOpenInventory().getTitle().contains("§c§l現在ベット")) {
                 p.closeInventory();
                 playersInMenu.add(p);
                 someOneInMenu = true;
-                playerMenuPage.put(p,1);
-                playerMenuState.put(p,"main");
-                game.openInventory(p,game.setUpMainInv(p));
-                return;
+                playerMenuPage.put(p, 1);
+                playerMenuState.put(p, "main");
+                game.openInventory(p, game.setUpMainInv(p));
             }
         }
     }
@@ -228,14 +252,27 @@ public final class Man10Jackpot extends JavaPlugin {
         idToItem.clear();
         idToUUID.clear();
         UUIDToId.clear();
-
+        inGame = false;
+        timerStarted = false;
         itemList.clear();
+        time = 20;
+        icon.setUpIcon();
 
         UUIDToBetInfo.clear();
         playerMenuPage.clear();
         playerMenuPage.clear();
         playerCalcValue.clear();
 
+    }
+
+    public void cancelGame (){
+        for(int i = 0; i < playersInGame.size(); i++){
+            Player p = playersInGame.get(i);
+            p.closeInventory();
+            vault.deposit(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).ammount * ticket_price);
+            p.sendMessage(prefix + "ゲームはキャンセルされました");
+        }
+        refreshGame();
     }
 
 }
