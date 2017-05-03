@@ -2,6 +2,8 @@ package red.man10.man10jackpot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -9,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -64,8 +68,9 @@ public final class Man10Jackpot extends JavaPlugin {
     public boolean inGame = false;
     public boolean someOneInMenu = false;
     public double tax = 0;
+    public boolean needToReturn = false;
 
-    public int timmer_time = 0;
+    public int timer_time = 0;
     public String winner_broadcast = getConfig().getString("winner_broadcast");
     public String loser_broadcast = getConfig().getString("loser_broadcast");
 
@@ -97,6 +102,7 @@ public final class Man10Jackpot extends JavaPlugin {
             Player p = playersInGame.get(i);
             p.closeInventory();
         }
+        //savePlayerDataToFile();
         cancelGame();
     }
 

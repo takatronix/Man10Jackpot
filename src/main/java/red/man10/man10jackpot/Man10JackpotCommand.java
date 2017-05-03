@@ -22,6 +22,10 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player)sender;
+        if(plugin.needToReturn == true){
+            plugin.loadPlayerDataAndPay();
+            plugin.needToReturn = false;
+        }
         if(plugin.inGame == true){
             p.openInventory(plugin.gameMenu);
             return true;
@@ -66,7 +70,7 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.reloadConfig();
                 plugin.tax = plugin.getConfig().getInt("tax_percentage");
                 plugin.ticket_price = plugin.getConfig().getInt("ticket_price");
-                plugin.timmer_time = plugin.getConfig().getInt("timmer");
+                plugin.timer_time = plugin.getConfig().getInt("timmer");
                 plugin.winner_broadcast = plugin.getConfig().getString("winner_broadcast");
                 plugin.loser_broadcast = plugin.getConfig().getString("loser_broadcast");
                 p.sendMessage(plugin.prefix + "リロードが完了しました");
