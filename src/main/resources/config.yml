@@ -1,2 +1,5 @@
 ticket_price: 10000
 tax_percentage: 5
+timmer: 120
+loser_broadcast: '%WINNER%さんが%PERCENTAGE%%の確立で%AMOUNT%円を勝ち取りました'
+winner_broadcast: 'おめでとうございます！ あなたはジャックポットで %PERCENTAGE%%の確立で ￥%AMOUNT% 勝利しました！税引き後(税引き後￥%TAXED%)'

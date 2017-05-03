@@ -64,6 +64,12 @@ public final class Man10Jackpot extends JavaPlugin {
     public boolean inGame = false;
     public boolean someOneInMenu = false;
     public double tax = 0;
+
+    public int timmer_time = 0;
+    public String winner_broadcast = getConfig().getString("winner_broadcast");
+    public String loser_broadcast = getConfig().getString("loser_broadcast");
+
+
     @Override
     public void onEnable() {
         // Plugin startup logic

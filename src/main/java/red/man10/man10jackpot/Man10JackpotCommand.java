@@ -66,6 +66,9 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.reloadConfig();
                 plugin.tax = plugin.getConfig().getInt("tax_percentage");
                 plugin.ticket_price = plugin.getConfig().getInt("ticket_price");
+                plugin.timmer_time = plugin.getConfig().getInt("timmer");
+                plugin.winner_broadcast = plugin.getConfig().getString("winner_broadcast");
+                plugin.loser_broadcast = plugin.getConfig().getString("loser_broadcast");
                 p.sendMessage(plugin.prefix + "リロードが完了しました");
                 return true;
             }

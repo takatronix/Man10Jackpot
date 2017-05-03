@@ -91,8 +91,15 @@ public class Man10JackpotRunnable {
                         plugin.inGame = false;
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
                         double winRate = (bet.ammount/plugin.totalBetInt)*100;
-                        Bukkit.getServer().broadcastMessage("§e" + bet.name + "§bさんが§e" + plugin.round(winRate,2) + "%§bの確率でで§e" + plugin.totalBet + "§b円勝ち取りました");
                         double payout = plugin.totalBet * ((100 - plugin.tax)/100);
+                        for(Player p : Bukkit.getOnlinePlayers()){
+                            if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){
+                                //p.sendMessage(plugin.prefix + bet.name + "さんが" + plugin.round(winRate,2) + "%の確立で" + Double.valueOf(plugin.totalBet) + "円を勝ち取りました");
+                                p.sendMessage(plugin.loser_broadcast.replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2)).replaceAll("&","§")).replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)));
+                            }else{
+                                p.sendMessage(plugin.winner_broadcast.replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2)).replaceAll("&","§")).replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)));
+                            }
+                        }
                        plugin.vault.deposit(plugin.idToUUID.get(record[0]),payout);
                         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             public void run() {
