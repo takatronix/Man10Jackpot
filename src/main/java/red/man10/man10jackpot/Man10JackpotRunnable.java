@@ -90,7 +90,7 @@ public class Man10JackpotRunnable {
                         cancel();
                         plugin.inGame = false;
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
-                        double winRate = (bet.ammount/plugin.totalBetInt)*100;
+                        double winRate = (bet.amount/plugin.totalBetInt)*100;
                         double payout = plugin.totalBet * ((100 - plugin.tax)/100);
                         for(Player p : Bukkit.getOnlinePlayers()){
                             if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){

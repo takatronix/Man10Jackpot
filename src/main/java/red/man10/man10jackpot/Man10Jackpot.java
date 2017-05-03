@@ -1,18 +1,12 @@
 package red.man10.man10jackpot;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -23,7 +17,7 @@ public final class Man10Jackpot extends JavaPlugin {
         Player player;
         String name;
         UUID uuid;
-        double ammount;
+        double amount;
     }
 
     public Inventory gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:");
@@ -38,6 +32,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10JackpotListener listener = new Man10JackpotListener(this);
     public Man10JackpotMenu menu = new Man10JackpotMenu(this);
     public Man10JackpotIcons icon = new Man10JackpotIcons(this);
+    public MySQLManager mysql = null;
 
     public List<Player> playersInMenu = new ArrayList<>();
     public List<Player> playersInGame = new ArrayList<>();
@@ -61,6 +56,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public int ticket_price = 0;
     public long totalBet = 0;
+    public int gameID = 0;
 
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
 
@@ -68,7 +64,6 @@ public final class Man10Jackpot extends JavaPlugin {
     public boolean inGame = false;
     public boolean someOneInMenu = false;
     public double tax = 0;
-    public boolean needToReturn = false;
 
     public int timer_time = 0;
     public String winner_broadcast = getConfig().getString("winner_broadcast");
@@ -87,6 +82,9 @@ public final class Man10Jackpot extends JavaPlugin {
         ticket_price = getConfig().getInt("ticket_price");
         vault = new VaultManager(this);
         tax = getConfig().getInt("tax_percentage");
+        mysql = new MySQLManager(this, "jackpot");
+        mysql.execute(gameTable);
+        mysql.execute(betTable);
 
     }
 
@@ -106,48 +104,79 @@ public final class Man10Jackpot extends JavaPlugin {
         cancelGame();
     }
 
-    public void placeBet(Player p,double ammount){
-        int ammountOfPlayer = playersInGame.size();
+    public String gameTable = "CREATE TABLE `jackpot_game` (\n" +
+            "\t`id` INT NOT NULL AUTO_INCREMENT,\n" +
+            "\t`game_id` INT NOT NULL DEFAULT '0',\n" +
+            "\t`total_ticket` INT NOT NULL DEFAULT '0',\n" +
+            "\t`ticket_price` INT NOT NULL DEFAULT '0',\n" +
+            "\t`winner_name` VARCHAR(64) NOT NULL DEFAULT '0',\n" +
+            "\t`winner_uuid` VARCHAR(64) NOT NULL DEFAULT '0',\n" +
+            "\t`time_start` VARCHAR(50) NOT NULL DEFAULT '0',\n" +
+            "\t`time_end` DATETIME NULL DEFAULT NULL,\n" +
+            "\t`date_time_end` DATETIME NULL DEFAULT NULL,\n" +
+            "\t`status` VARCHAR(50) NULL DEFAULT '0',\n" +
+            "\tPRIMARY KEY (`id`)\n" +
+            ")\n" +
+            "COLLATE='utf8_general_ci'\n" +
+            "ENGINE=InnoDB\n" +
+            ";";
+
+    public String betTable = "CREATE TABLE `jackpot_bet` (\n" +
+            "\t`id` INT NOT NULL AUTO_INCREMENT,\n" +
+            "\t`game_id` INT NULL DEFAULT '0',\n" +
+            "\t`uuid` VARCHAR(64) NULL DEFAULT '0',\n" +
+            "\t`name` VARCHAR(64) NULL DEFAULT '0',\n" +
+            "\t`amount` INT NULL DEFAULT '0',\n" +
+            "\t`ticket_price` INT NULL DEFAULT '0',\n" +
+            "\t`time` DATETIME NULL DEFAULT NULL,\n" +
+            "\tPRIMARY KEY (`id`)\n" +
+            ")\n" +
+            "COLLATE='utf8_general_ci'\n" +
+            "ENGINE=InnoDB\n" +
+            ";";
+
+    public void placeBet(Player p,double amount){
+        int amountOfPlayer = playersInGame.size();
         if(playerUUIDInGame.contains(p.getUniqueId())){
             BetInfo getBet = UUIDToBetInfo.get(p.getUniqueId());
             ItemStack itemt = idToItem.get(UUIDToId.get(p.getUniqueId()));
             ItemMeta itemMetat = itemt.getItemMeta();
             itemMetat.setDisplayName("§e§l" + p.getName());
-            int intValueOfAmmount = ((int)ammount  + (int) getBet.ammount);
-            String[] lore = {"§c§l====================","§d§l掛け金" + (ammount + getBet.ammount) * ticket_price,"§d§l" + intValueOfAmmount + "口購入","§c§l====================","§b§l勝率"};
+            int intValueOfAmount = ((int)amount  + (int) getBet.amount);
+            String[] lore = {"§c§l====================","§d§l掛け金" + (amount + getBet.amount) * ticket_price,"§d§l" + intValueOfAmount + "口購入","§c§l====================","§b§l勝率"};
             itemMetat.setLore(Arrays.asList(lore));
             itemt.setItemMeta(itemMetat);
             idToItem.put(UUIDToId.get(p.getUniqueId()),itemt);
-            for(int i = 0; i < ammount; i++){
+            for(int i = 0; i < amount; i++){
                 chanceInGame.add(UUIDToId.get(p.getUniqueId()));
                 totalBetInt++;
             }
-            getBet.ammount = getBet.ammount + ammount;
+            getBet.amount = getBet.amount + amount;
             getBet.player = p;
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            startTimer(ammountOfPlayer);
+            startTimer(amountOfPlayer);
             totalBet = totalBetInt * ticket_price;
-            vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
+            vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * amount));
             p.sendMessage(prefix + "ベットしました");
             refreshPercentage();
             refreshMenu();
             openMainMenuForPlayer(p);
             return;
         }
-        idToUUID.put(ammountOfPlayer + 1,p.getUniqueId());
-        UUIDToId.put(p.getUniqueId(),ammountOfPlayer + 1);
-        ItemStack item = icons.get(ammountOfPlayer + 1);
+        idToUUID.put(amountOfPlayer + 1,p.getUniqueId());
+        UUIDToId.put(p.getUniqueId(),amountOfPlayer + 1);
+        ItemStack item = icons.get(amountOfPlayer + 1);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName("§e§l" + p.getName());
-        int intValueOfAmmount = (int)ammount;
-        String[] lore = {"§c§l====================","§d§l掛け金" + ammount * ticket_price,"§d§l" + intValueOfAmmount + "口購入","§c§l====================","§b§l勝率"};
+        int intValueOfamount = (int)amount;
+        String[] lore = {"§c§l====================","§d§l掛け金" + amount * ticket_price,"§d§l" + intValueOfamount + "口購入","§c§l====================","§b§l勝率"};
         itemMeta.setLore(Arrays.asList(lore));
         item.setItemMeta(itemMeta);
-        idToItem.put(ammountOfPlayer + 1,item);
+        idToItem.put(amountOfPlayer + 1,item);
         BetInfo betInfo = new BetInfo();
-        betInfo.ammount = ammount;
+        betInfo.amount = amount;
         betInfo.name = p.getName();
         betInfo.player = p;
         betInfo.uuid = p.getUniqueId();
@@ -155,21 +184,21 @@ public final class Man10Jackpot extends JavaPlugin {
         playersInGame.add(p);
         playerUUIDInGame.add(p.getUniqueId());
         itemList.add(item);
-        for(int i = 0; i < ammount; i++){
-            chanceInGame.add(ammountOfPlayer + 1);
+        for(int i = 0; i < amount; i++){
+            chanceInGame.add(amountOfPlayer + 1);
             totalBetInt++;
         }
-        startTimer(ammountOfPlayer);
+        startTimer(amountOfPlayer);
         totalBet = totalBetInt * ticket_price;
-        vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * ammount));
+        vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * amount));
         refreshPercentage();
         refreshMenu();
         openMainMenuForPlayer(p);
         p.sendMessage(prefix + "ベットしました");
         return;
     }
-    public void startTimer(int ammount){
-        if(ammount < 1 || timerStarted == true) {
+    public void startTimer(int amount){
+        if(amount < 1 || timerStarted == true) {
            return;
         }
         timerStarted = true;
@@ -203,15 +232,6 @@ public final class Man10Jackpot extends JavaPlugin {
         }
     }
 
-    public void list(Player p){
-        for(Player player : playersInGame){
-            BetInfo bet = UUIDToBetInfo.get(player.getUniqueId());
-            p.sendMessage(bet.name + " id:" + UUIDToId.get(player.getUniqueId()) + " bet:" + bet.ammount);
-        }
-        for(int i = 0;i < playersInGame.size(); i ++){
-            p.sendMessage(playersInGame.get(i).getName());
-        }
-    }
 
     public void refreshPercentage(){
         for(int i = 0; i < playersInGame.size(); i ++){
@@ -220,8 +240,8 @@ public final class Man10Jackpot extends JavaPlugin {
             ItemStack item = idToItem.get(UUIDToId.get(p.getUniqueId()));
             ItemMeta itemMeta = item.getItemMeta();
             itemMeta.setDisplayName("§e§l" + p.getName());
-            double winRate = (info.ammount/totalBetInt)*100;
-            String[] lore = {"§c§l====================","§d§l掛け金" + info.ammount * ticket_price,"§d§l" + ((int) info.ammount) + "口購入","§c§l====================","§b§l勝率" + round(winRate,2) + "%"};
+            double winRate = (info.amount/totalBetInt)*100;
+            String[] lore = {"§c§l====================","§d§l掛け金" + info.amount * ticket_price,"§d§l" + ((int) info.amount) + "口購入","§c§l====================","§b§l勝率" + round(winRate,2) + "%"};
             itemMeta.setLore(Arrays.asList(lore));
             item.setItemMeta(itemMeta);
             idToItem.put(UUIDToId.get(p.getUniqueId()),item);
@@ -281,10 +301,15 @@ public final class Man10Jackpot extends JavaPlugin {
         for(int i = 0; i < playersInGame.size(); i++){
             Player p = playersInGame.get(i);
             p.closeInventory();
-            vault.deposit(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).ammount * ticket_price);
+            vault.deposit(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price);
             p.sendMessage(prefix + "ゲームはキャンセルされました");
         }
         refreshGame();
+    }
+
+    public void updateGameID(){
+        int i = mysql.countRows("SELECT * FROM jackpot_game");
+        gameID = i + 1;
     }
 
 }

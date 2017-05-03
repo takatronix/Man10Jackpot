@@ -252,19 +252,6 @@ public class Man10JackpotListener implements Listener {
             plugin.playerCalcValue.remove(p);
             return;
         }
-        if(plugin.playerMenuState.get(p).equalsIgnoreCase("dev")){
-            plugin.playersInMenu.remove(p);
-            plugin.playerMenuPage.remove(p);
-            if(plugin.playersInMenu.isEmpty()){
-                plugin.someOneInMenu = false;
-            }
-            for(int i = 0;i < e.getInventory().getSize(); i++){
-                ItemStack item = new ItemStack(e.getInventory().getItem(i));
-                String name = item.getType().name();
-                int damage = item.getDurability();
-                Bukkit.getServer().broadcastMessage("new ItemStack(Material." + name + ",1,(short) " + damage + "),");
-            }
-        }
         plugin.playersInMenu.remove(p);
         plugin.playerMenuPage.remove(p);
         if(plugin.playersInMenu.isEmpty()){

@@ -22,48 +22,13 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player)sender;
-        if(plugin.needToReturn == true){
-            plugin.loadPlayerDataAndPay();
-            plugin.needToReturn = false;
-        }
         if(plugin.inGame == true){
             p.openInventory(plugin.gameMenu);
             return true;
         }
         if(args.length == 1){
-            if(args[0].equalsIgnoreCase("list")){
-                p.sendMessage(String.valueOf(plugin.totalBetInt));
-                plugin.list(p);
-
-                return true;
-            }
             if(args[0].equalsIgnoreCase("cancel")){
                 plugin.cancelGame();
-                return true;
-            }
-            if(args[0].equalsIgnoreCase("menu")){
-                plugin.menu.setUpGameMenu();
-                p.openInventory(plugin.gameMenu);
-                return true;
-            }
-            if(args[0].equalsIgnoreCase("runnable")){
-                p.openInventory(plugin.gameMenu);
-                plugin.runnable.onSpin();
-                return true;
-            }
-            if(args[0].equalsIgnoreCase("bet")){
-                plugin.placeBet(p,100);
-                Player player = Bukkit.getPlayer("hashing_bot");
-                plugin.placeBet(player,100);
-                return true;
-            }
-            if(args[0].equalsIgnoreCase("listt")){
-                plugin.playersInMenu.add(p);
-                plugin.someOneInMenu = true;
-                plugin.playerMenuPage.put(p,1);
-                plugin.playerMenuState.put(p,"dev");
-                Inventory inv = Bukkit.createInventory(null,54,"put items");
-                p.openInventory(inv);
                 return true;
             }
             if(args[0].equalsIgnoreCase("reload")){
@@ -74,6 +39,15 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.winner_broadcast = plugin.getConfig().getString("winner_broadcast");
                 plugin.loser_broadcast = plugin.getConfig().getString("loser_broadcast");
                 p.sendMessage(plugin.prefix + "リロードが完了しました");
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("help")){
+                p.sendMessage("§e§l=--------=§b[§c§lMan10Jackpot§b]§e§l=--------=");
+                p.sendMessage("§d/mj help ヘルプコマンド表示");
+                p.sendMessage("§d/mj cancel キャンセルコマンド");
+                p.sendMessage("§d/mj reload リロードコマンド");
+                p.sendMessage("§e§l=-------------------------------=");
+                p.sendMessage("§d§lCreated By Sho0");
                 return true;
             }
         }
