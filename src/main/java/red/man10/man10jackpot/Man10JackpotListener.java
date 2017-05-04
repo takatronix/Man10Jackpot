@@ -123,6 +123,7 @@ public class Man10JackpotListener implements Listener {
                 //bet
                 //bet
                 //bet
+                plugin.mysql.execute("insert into jackpot_bet values ('0','" + plugin.gameID + "','" + p.getUniqueId() + "','" + p.getName() + "','" + plugin.playerCalcValue.get(p) + "','" + plugin.ticket_price + "'," + plugin.currentTime() + ");");
                 plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
                 e.setCancelled(true);
                 return;

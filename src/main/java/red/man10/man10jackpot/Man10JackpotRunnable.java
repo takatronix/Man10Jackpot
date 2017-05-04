@@ -10,6 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -43,7 +45,8 @@ public class Man10JackpotRunnable {
                     }
                     for (int i = 0; i < plugin.playersInMenu.size(); i++) {
                         if (plugin.playerMenuState.get(plugin.playersInMenu.get(i)).equalsIgnoreCase("main")) {
-                            Player p = plugin.playersInMenu.get(i);
+                            try {
+                                Player p = plugin.playersInMenu.get(i);
                                 ItemStack item = new ItemStack(Material.WATCH);
                                 ItemMeta itemMeta = item.getItemMeta();
                                 itemMeta.setDisplayName("§d§l残り時間");
@@ -51,6 +54,8 @@ public class Man10JackpotRunnable {
                                 itemMeta.setLore(Arrays.asList(lore));
                                 item.setItemMeta(itemMeta);
                                 p.getOpenInventory().setItem(47, item);
+                            }catch (Exception ee){
+                            }
                         }
                     }
                     plugin.time--;
@@ -92,12 +97,14 @@ public class Man10JackpotRunnable {
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
                         double winRate = (bet.amount/plugin.totalBetInt)*100;
                         double payout = plugin.totalBet * ((100 - plugin.tax)/100);
+                        plugin.mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + plugin.gameID + "';");
+                        plugin.mysql.execute("insert into jackpot_game values ('0','" + plugin.gameID + "','" + plugin.totalBetInt + "','" + plugin.ticket_price + "','" + bet.name + "','" + bet.uuid + "'," + plugin.starttime + "," + plugin.currentTime() + ",'end');");
                         for(Player p : Bukkit.getOnlinePlayers()){
                             if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){
                                 //p.sendMessage(plugin.prefix + bet.name + "さんが" + plugin.round(winRate,2) + "%の確立で" + Double.valueOf(plugin.totalBet) + "円を勝ち取りました");
-                                p.sendMessage(plugin.loser_broadcast.replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2)).replaceAll("&","§")).replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)));
+                                p.sendMessage(plugin.loser_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
                             }else{
-                                p.sendMessage(plugin.winner_broadcast.replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2)).replaceAll("&","§")).replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)));
+                                p.sendMessage(plugin.winner_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
                             }
                         }
                        plugin.vault.deposit(plugin.idToUUID.get(record[0]),payout);
@@ -111,7 +118,7 @@ public class Man10JackpotRunnable {
                                     Player p = plugin.playersInGame.get(i);
                                     p.closeInventory();
                                 }
-                                plugin.refreshGame();
+                                plugin.refreshGame(true);
                             }
                         },60);
                         return;

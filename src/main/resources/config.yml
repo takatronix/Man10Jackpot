@@ -1,8 +1,8 @@
 ticket_price: 10000
 tax_percentage: 5
-timmer: 120
-loser_broadcast: '%WINNER%さんがジャックポットで%PERCENTAGE%%の確立で%AMOUNT%円を勝ち取りました！'
-winner_broadcast: 'おめでとうございます！ あなたはジャックポットで %PERCENTAGE%%の確立で ￥%AMOUNT% 勝利しました！税引き後(税引き後￥%TAXED%)'
+timer: 120
+loser_broadcast: '&e%WINNER%&bさんがジャックポットで&e%PERCENTAGE%%&bの確立で&c&l&n￥%AMOUNT%&eを勝ち取りました！'
+winner_broadcast: '&4&l&lおめでとうございます！ あなたはジャックポットで &e%PERCENTAGE%%&4&lの確立で &c&l￥%AMOUNT% &e&l勝利しました！税引き後(税引き後￥%TAXED%)'
 mysql:
   host: localhost
   port: 3306
