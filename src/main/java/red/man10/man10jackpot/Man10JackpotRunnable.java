@@ -80,6 +80,10 @@ public class Man10JackpotRunnable {
             public void run() {
                 if(require < count) {
                     require++;
+                    for(int i = 0; i < plugin.playersInMenu.size(); i++){
+                        Player p = plugin.playersInMenu.get(i);
+                        p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE,1,1);
+                    }
                     count = 0;
                     Random r = new Random();
                     if(mainCount < 80){
@@ -117,6 +121,9 @@ public class Man10JackpotRunnable {
                                 for(int i = 0; i < plugin.playersInGame.size(); i++){
                                     Player p = plugin.playersInGame.get(i);
                                     p.closeInventory();
+                                }
+                                for(Player p : Bukkit.getOnlinePlayers()){
+                                    p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
                                 }
                                 plugin.refreshGame(true);
                             }

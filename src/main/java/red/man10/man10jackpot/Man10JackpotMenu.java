@@ -24,7 +24,7 @@ public class Man10JackpotMenu {
 
 
     public void betMenuInv(Player p){
-        Inventory betMenu = Bukkit.createInventory(null,54,"§5§lベットメニュー");
+        Inventory betMenu = Bukkit.createInventory(null,54,"§5§lベットメニュー 1口￥" + plugin.ticket_price);
         ItemStack i0 = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/0ebe7e5215169a699acc6cefa7b73fdb108db87bb6dae2849fbe24714b27").build();
         ItemStack i1 = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/71bc2bcfb2bd3759e6b1e86fc7a79585e1127dd357fc202893f9de241bc9e530").build();
         ItemStack i2 = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/4cd9eeee883468881d83848a46bf3012485c23f75753b8fbe8487341419847").build();

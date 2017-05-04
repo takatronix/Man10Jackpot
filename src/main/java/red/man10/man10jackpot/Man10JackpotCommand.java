@@ -43,6 +43,11 @@ public class Man10JackpotCommand implements CommandExecutor {
                     p.sendMessage(plugin.prefix + "あなたには権限はありません");
                     return false;
                 }
+                for(int i = 0; i < plugin.playersInMenu.size(); i++){
+                    Player pp = plugin.playersInMenu.get(i);
+                    pp.closeInventory();
+                }
+                p.sendMessage(plugin.prefix + "ゲームがキャンセルされました");
                 plugin.cancelGame(true);
                 return true;
             }
