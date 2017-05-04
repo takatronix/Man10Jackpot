@@ -120,6 +120,10 @@ public class Man10JackpotListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
+                if(plugin.playersInGame.size() > plugin.icons.size()){
+                    p.sendMessage(plugin.prefix + "満員です");
+                    return;
+                }
                 //bet
                 //bet
                 //bet
