@@ -253,10 +253,6 @@ public class Man10JackpotListener implements Listener {
         if(!plugin.playerMenuState.containsKey(p)){
             return;
         }
-        if(plugin.playerMenuState.get(p).equalsIgnoreCase("bet")){
-            plugin.playerCalcValue.remove(p);
-            return;
-        }
         plugin.playersInMenu.remove(p);
         plugin.playerMenuPage.remove(p);
         if(plugin.playersInMenu.isEmpty()){

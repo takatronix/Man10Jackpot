@@ -25,6 +25,8 @@ public class Man10JackpotCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
         if (plugin.inGame == true) {
+            plugin.playersInMenu.add(p);
+            plugin.someOneInMenu = true;
             p.openInventory(plugin.gameMenu);
             return true;
         }
