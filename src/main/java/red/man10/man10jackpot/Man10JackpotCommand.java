@@ -24,6 +24,10 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
+        if(plugin.lockdown){
+            p.sendMessage(plugin.prefix + "現在ゲームはロックダウンされてます");
+            return true;
+        }
         if (plugin.inGame == true) {
             plugin.playersInMenu.add(p);
             plugin.someOneInMenu = true;
@@ -53,6 +57,20 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.cancelGame(true);
                 return true;
             }
+            if(args[0].equalsIgnoreCase("lock")){
+                if(!p.hasPermission("man10.jackpot.lock")){
+                    p.sendMessage(plugin.prefix + "あなたには権限はありません");
+                    return true;
+                }
+                if(plugin.lockdown){
+                    plugin.lockdown = false;
+                    p.sendMessage(plugin.prefix + "ロックを解除しました");
+                    return true;
+                }
+                plugin.lockdown = true;
+                p.sendMessage(plugin.prefix + "ロックしました");
+                return true;
+            }
             if (args[0].equalsIgnoreCase("reload")) {
                 if(!p.hasPermission("man10.jackpot.reload")){
                     p.sendMessage(plugin.prefix + "あなたには権限はありません");
@@ -72,6 +90,7 @@ public class Man10JackpotCommand implements CommandExecutor {
             if (args[0].equalsIgnoreCase("help")) {
                 p.sendMessage("§e§l=--------=§b[§c§lMan10Jackpot§b]§e§l=--------=");
                 p.sendMessage("§b/mj help ヘルプコマンド表示");
+                p.sendMessage("§b/mj lock ゲームをロックダウン");
                 p.sendMessage("§b/mj cancel キャンセルコマンド");
                 p.sendMessage("§b/mj reload リロードコマンド");
                 p.sendMessage("§b/mj forcestart ゲームを強制開始");

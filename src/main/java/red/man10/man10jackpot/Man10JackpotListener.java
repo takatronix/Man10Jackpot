@@ -229,7 +229,7 @@ public class Man10JackpotListener implements Listener {
 
 
     public void changeConfirmPrice(Inventory inv,Player p){
-        String[] lore = {"§e§l" + plugin.playerCalcValue.get(p) + "口","§e§l" + String.valueOf(Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p))) * Integer.valueOf(plugin.ticket_price)) + "円"};
+        String[] lore = {"§e§l" + plugin.playerCalcValue.get(p) + "口","§e§l" + String.valueOf(Double.valueOf(plugin.playerCalcValue.get(p)) * Integer.valueOf(plugin.ticket_price)) + "円"};
         ItemMeta buttonMeta = inv.getItem(50).getItemMeta();
         buttonMeta.setLore(Arrays.asList(lore));
         inv.getItem(50).setItemMeta(buttonMeta);
@@ -253,6 +253,7 @@ public class Man10JackpotListener implements Listener {
         if(!plugin.playerMenuState.containsKey(p)){
             return;
         }
+        plugin.playerCalcValue.remove(p);
         plugin.playersInMenu.remove(p);
         plugin.playerMenuPage.remove(p);
         if(plugin.playersInMenu.isEmpty()){
