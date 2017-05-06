@@ -24,10 +24,6 @@ public class Man10JackpotCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
-        if(plugin.lockdown){
-            p.sendMessage(plugin.prefix + "現在ゲームはロックダウンされてます");
-            return true;
-        }
         if (plugin.inGame == true) {
             plugin.playersInMenu.add(p);
             plugin.someOneInMenu = true;
@@ -116,6 +112,10 @@ public class Man10JackpotCommand implements CommandExecutor {
                 }
                 return true;
             }
+        }
+        if(plugin.lockdown){
+            p.sendMessage(plugin.prefix + "現在ゲームはロックダウンされてます");
+            return true;
         }
         plugin.playersInMenu.add(p);
         plugin.someOneInMenu = true;

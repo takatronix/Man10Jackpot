@@ -115,7 +115,7 @@ public class Man10JackpotListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                if(plugin.vault.getBalance(p.getUniqueId()) < Double.valueOf(Integer.valueOf(plugin.playerCalcValue.get(p)) * plugin.ticket_price)){
+                if(plugin.vault.getBalance(p.getUniqueId()) < (Double.valueOf(plugin.playerCalcValue.get(p)) * Double.valueOf(plugin.ticket_price))){
                     p.sendMessage(plugin.prefix + "十分な所持金を持っていません");
                     e.setCancelled(true);
                     return;
@@ -136,6 +136,20 @@ public class Man10JackpotListener implements Listener {
                 e.getWhoClicked().closeInventory();
                 e.setCancelled(true);
                 return;
+            }
+            if(e.getSlot() == 48){
+                for (int i = 0; i < 9; i++){
+                    inv.setItem(i, new ItemStack(Material.AIR));
+                }
+                plugin.playerCalcValue.put(p,null);
+                ItemMeta itemMeta = inv.getItem(50).getItemMeta();
+                itemMeta.setLore(null);
+                inv.getItem(50).setItemMeta(itemMeta);
+                e.setCancelled(true);
+                return;
+            }
+            if(plugin.playerCalcValue.get(p) == null){
+                plugin.playerCalcValue.put(p,"");
             }
             if(e.getInventory().getItem(0) != null){
                 p.sendMessage(plugin.prefix + "掛け金の上限です");
@@ -205,20 +219,6 @@ public class Man10JackpotListener implements Listener {
                 inv.setItem(8,inv.getItem(46));
 
                 val = "0";
-            }
-            if(e.getSlot() == 48){
-                for (int i = 0; i < 9; i++){
-                    inv.setItem(i, new ItemStack(Material.AIR));
-                }
-                plugin.playerCalcValue.put(p,null);
-                ItemMeta itemMeta = inv.getItem(50).getItemMeta();
-                itemMeta.setLore(null);
-                inv.getItem(50).setItemMeta(itemMeta);
-                e.setCancelled(true);
-                return;
-            }
-            if(plugin.playerCalcValue.get(p) == null){
-                plugin.playerCalcValue.put(p,"");
             }
             plugin.playerCalcValue.put(p,plugin.playerCalcValue.get(p) + val);
             changeConfirmPrice(e.getInventory(),p);
