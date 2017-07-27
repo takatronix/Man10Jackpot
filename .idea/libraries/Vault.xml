@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="Vault">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../spigot/plugins/Vault.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../minecraft server/plugins/Vault.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
