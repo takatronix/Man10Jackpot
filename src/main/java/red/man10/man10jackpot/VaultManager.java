@@ -51,16 +51,22 @@ public class VaultManager {
     public void showBalance(UUID uuid){
         OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
         double money = getBalance(uuid);
-        p.getPlayer().sendMessage(ChatColor.YELLOW + "あなたの所持金は$" + money);
+        p.getPlayer().sendMessage(ChatColor.YELLOW + "あなたの所持金は$" + (int)money);
     }
     /////////////////////////////////////
     //      引き出し
     /////////////////////////////////////
     public Boolean  withdraw(UUID uuid, double money){
-        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
+        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+        if(p == null){
+            Bukkit.getLogger().info(uuid.toString()+"は見つからない");
+            return false;
+        }
         EconomyResponse resp = economy.withdrawPlayer(p,money);
         if(resp.transactionSuccess()){
-            p.getPlayer().sendMessage(ChatColor.YELLOW + "$"+money+"支払いました");
+            if(p.isOnline()) {
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "$" + (int) money + "支払いました");
+            }
             return true;
         }
         return  false;
@@ -69,10 +75,17 @@ public class VaultManager {
     //      お金を入れる
     /////////////////////////////////////
     public Boolean  deposit(UUID uuid,double money){
-        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
+        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+        if(p == null){
+            Bukkit.getLogger().info(uuid.toString()+"は見つからない");
+
+            return false;
+        }
         EconomyResponse resp = economy.depositPlayer(p,money);
         if(resp.transactionSuccess()){
-            p.getPlayer().sendMessage(ChatColor.YELLOW + "$"+money+"受取りました");
+            if(p.isOnline()){
+                p.getPlayer().sendMessage(ChatColor.YELLOW + "$"+(int)money+"受取りました");
+            }
             return true;
         }
         return  false;

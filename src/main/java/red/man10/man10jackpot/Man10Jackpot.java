@@ -1,11 +1,13 @@
 package red.man10.man10jackpot;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import red.man10.man10mysqlapi.MySQLAPI;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,10 +35,10 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10JackpotListener listener = new Man10JackpotListener(this);
     public Man10JackpotMenu menu = new Man10JackpotMenu(this);
     public Man10JackpotIcons icon = new Man10JackpotIcons(this);
-    public MySQLManager mysql = null;
+    public MySQLAPI mysql = null;
 
     public List<Player> playersInMenu = new ArrayList<>();
-    public List<Player> playersInGame = new ArrayList<>();
+    public List<UUID> playersInGame = new ArrayList<>();
     public List<Integer> chanceInGame = new ArrayList<>();
     public List<UUID> playerUUIDInGame = new ArrayList<>();
 
@@ -86,7 +88,7 @@ public final class Man10Jackpot extends JavaPlugin {
         ticket_price = getConfig().getInt("ticket_price");
         vault = new VaultManager(this);
         tax = getConfig().getInt("tax_percentage");
-        mysql = new MySQLManager(this, "jackpot");
+        mysql = new MySQLAPI(this, "jackpot");
         mysql.execute(gameTable);
         mysql.execute(betTable);
         refreshGame(true);
@@ -98,17 +100,17 @@ public final class Man10Jackpot extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         for(int i = 0; i < playersInGame.size(); i++){
-            Player p = playersInGame.get(i);
+            Player p = Bukkit.getPlayer(playersInGame.get(i));
             p.closeInventory();
         }
-        for(int i = 0; i < playersInGame.size(); i++){
-            Player p = playersInGame.get(i);
+        for(int i = 0; i < playersInMenu.size(); i++){
+            Player p = playersInMenu.get(i);
             p.closeInventory();
         }
+        cancelGame(false);
         //savePlayerDataToFile();
         mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + gameID + "';");
         mysql.execute("insert into jackpot_game values ('0','" + gameID + "','" + totalBetInt + "','" + ticket_price + "','none','none'," + starttime + "," + currentTime() + ",'canceled');");
-        cancelGame(false);
     }
 
     public String gameTable = "CREATE TABLE `jackpot_game` (\n" +
@@ -142,7 +144,6 @@ public final class Man10Jackpot extends JavaPlugin {
             ";";
 
     public void placeBet(Player p,double amount){
-        int amountOfPlayer = playersInGame.size();
         if(playerUUIDInGame.contains(p.getUniqueId())){
             BetInfo getBet = UUIDToBetInfo.get(p.getUniqueId());
             ItemStack itemt = idToItem.get(UUIDToId.get(p.getUniqueId()));
@@ -162,7 +163,6 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            startTimer(amountOfPlayer);
             totalBet = totalBetInt * ticket_price;
             vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * amount));
             p.sendMessage(prefix + "ベットしました");
@@ -171,6 +171,7 @@ public final class Man10Jackpot extends JavaPlugin {
             openMainMenuForPlayer(p);
             return;
         }
+        int amountOfPlayer = playersInGame.size();
         idToUUID.put(amountOfPlayer + 1,p.getUniqueId());
         UUIDToId.put(p.getUniqueId(),amountOfPlayer + 1);
         ItemStack item = icons.get(amountOfPlayer + 1);
@@ -187,14 +188,14 @@ public final class Man10Jackpot extends JavaPlugin {
         betInfo.player = p;
         betInfo.uuid = p.getUniqueId();
         UUIDToBetInfo.put(p.getUniqueId(), betInfo);
-        playersInGame.add(p);
+        playersInGame.add(p.getUniqueId());
         playerUUIDInGame.add(p.getUniqueId());
         itemList.add(item);
         for(int i = 0; i < amount; i++){
             chanceInGame.add(amountOfPlayer + 1);
             totalBetInt++;
         }
-        startTimer(amountOfPlayer);
+        startTimer(playersInGame.size());
         totalBet = totalBetInt * ticket_price;
         vault.withdraw(p.getUniqueId(),Double.valueOf(ticket_price * amount));
         refreshPercentage();
@@ -204,7 +205,7 @@ public final class Man10Jackpot extends JavaPlugin {
         return;
     }
     public void startTimer(int amount){
-        if(amount < 1 || timerStarted == true) {
+        if(amount < 2 || timerStarted == true) {
            return;
         }
         timerStarted = true;
@@ -241,7 +242,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public void refreshPercentage(){
         for(int i = 0; i < playersInGame.size(); i ++){
-            Player p = playersInGame.get(i);
+            OfflinePlayer p = Bukkit.getOfflinePlayer(playersInGame.get(i));
             BetInfo info = UUIDToBetInfo.get(p.getUniqueId());
             ItemStack item = idToItem.get(UUIDToId.get(p.getUniqueId()));
             ItemMeta itemMeta = item.getItemMeta();
@@ -271,10 +272,12 @@ public final class Man10Jackpot extends JavaPlugin {
             }
         }
         for(int i = 0; i < playersInGame.size(); i++){
-            Player p = playersInGame.get(i);
-            p.closeInventory();
-            p.openInventory(gameMenu);
-            playersInMenu.add(p);
+            Player p = Bukkit.getPlayer(playersInGame.get(i));
+            if(p != null) {
+                p.closeInventory();
+                p.openInventory(gameMenu);
+                playersInMenu.add(p);
+            }
         }
         someOneInMenu = true;
         runnable.onSpin();
@@ -303,17 +306,31 @@ public final class Man10Jackpot extends JavaPlugin {
         starttime = currentTime();
         if(createNew) {
             updateGameID();
-            mysql.execute("insert into jackpot_game values ('0','" + gameID + "','0','0','none','none'," + starttime + ",'2017-00-00 00:00:00','open');");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mysql.execute("insert into jackpot_game values ('0','" + gameID + "','0','0','none','none'," + starttime + ",'2017-00-00 00:00:00','open');");
+                }
+            }).start();
         }
 
     }
 
     public void cancelGame (boolean createNew){
         for(int i = 0; i < playersInGame.size(); i++){
-            Player p = playersInGame.get(i);
-            p.closeInventory();
+            OfflinePlayer p = Bukkit.getOfflinePlayer(playersInGame.get(i));
             vault.deposit(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price);
-            p.sendMessage(prefix + "ゲームはキャンセルされました");
+        }
+        for(int i = 0; i < playersInGame.size(); i++){
+            Player p = Bukkit.getPlayer(playersInGame.get(i));
+            if(p != null){
+                p.closeInventory();
+                p.sendMessage(prefix + "ゲームがキャンセルされました");
+            }
+        }
+        for(int i = 0; i < playersInMenu.size(); i++){
+            Player p = playersInMenu.get(i);
+            p.closeInventory();
         }
         refreshGame(createNew);
     }
@@ -331,7 +348,6 @@ public final class Man10Jackpot extends JavaPlugin {
 
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
-        Bukkit.getLogger().info("datetime ");
         String currentTime = "'"+sdf.format(date)+"'";
         Bukkit.getLogger().info(currentTime);
         return currentTime;

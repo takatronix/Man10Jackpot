@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import red.man10.man10jackpot.Man10Jackpot;
+import red.man10.man10mysqlapi.MySQLAPI;
 
 import java.awt.font.NumericShaper;
 
@@ -78,7 +79,7 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.timer_time = plugin.getConfig().getInt("timer");
                 plugin.winner_broadcast = plugin.getConfig().getString("winner_broadcast");
                 plugin.loser_broadcast = plugin.getConfig().getString("loser_broadcast");
-                plugin.mysql = new MySQLManager(plugin, "jackpot");
+                plugin.mysql = new MySQLAPI(plugin, "jackpot");
                 plugin.time = plugin.timer_time;
                 p.sendMessage(plugin.prefix + "リロードが完了しました");
                 return true;
@@ -91,6 +92,7 @@ public class Man10JackpotCommand implements CommandExecutor {
                 p.sendMessage("§b/mj reload リロードコマンド");
                 p.sendMessage("§b/mj forcestart ゲームを強制開始");
                 p.sendMessage("§b/mj addtime <数字> 時間を追加する");
+                p.sendMessage("§d Man10 Jackpot V1.5");
                 p.sendMessage("§e§l=-------------------------------=");
                 p.sendMessage("§d§lCreated By Sho0");
                 return true;

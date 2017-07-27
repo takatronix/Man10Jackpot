@@ -101,8 +101,13 @@ public class Man10JackpotRunnable {
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
                         double winRate = (bet.amount/plugin.totalBetInt)*100;
                         double payout = plugin.totalBet * ((100 - plugin.tax)/100);
-                        plugin.mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + plugin.gameID + "';");
-                        plugin.mysql.execute("insert into jackpot_game values ('0','" + plugin.gameID + "','" + plugin.totalBetInt + "','" + plugin.ticket_price + "','" + bet.name + "','" + bet.uuid + "'," + plugin.starttime + "," + plugin.currentTime() + ",'end');");
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                plugin.mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + plugin.gameID + "';");
+                                plugin.mysql.execute("insert into jackpot_game values ('0','" + plugin.gameID + "','" + plugin.totalBetInt + "','" + plugin.ticket_price + "','" + bet.name + "','" + bet.uuid + "'," + plugin.starttime + "," + plugin.currentTime() + ",'end');");
+                            }
+                        }).start();
                         for(Player p : Bukkit.getOnlinePlayers()){
                             if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){
                                 //p.sendMessage(plugin.prefix + bet.name + "さんが" + plugin.round(winRate,2) + "%の確立で" + Double.valueOf(plugin.totalBet) + "円を勝ち取りました");
@@ -112,18 +117,22 @@ public class Man10JackpotRunnable {
                             }
                         }
                        plugin.vault.deposit(plugin.idToUUID.get(record[0]),payout);
+                        for(Player p : Bukkit.getOnlinePlayers()){
+                            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
+                        }
                         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             public void run() {
                                 for(int i = 0; i < plugin.playersInGame.size(); i++){
-                                    Player p = plugin.playersInGame.get(i);
-                                    p.closeInventory();
+                                    Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
+                                    if(p != null){
+                                        p.closeInventory();
+                                    }
                                 }
                                 for(int i = 0; i < plugin.playersInGame.size(); i++){
-                                    Player p = plugin.playersInGame.get(i);
-                                    p.closeInventory();
-                                }
-                                for(Player p : Bukkit.getOnlinePlayers()){
-                                    p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
+                                    Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
+                                    if(p != null){
+                                        p.closeInventory();
+                                    }
                                 }
                                 plugin.refreshGame(true);
                             }

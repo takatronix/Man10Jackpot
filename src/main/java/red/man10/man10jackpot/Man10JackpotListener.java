@@ -108,30 +108,6 @@ public class Man10JackpotListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if(e.getSlot() == 50){
-                //bet button
-                if(plugin.playerCalcValue.get(p) == null){
-                    p.sendMessage(plugin.prefix + "購入は1口以上からです");
-                    e.setCancelled(true);
-                    return;
-                }
-                if(plugin.vault.getBalance(p.getUniqueId()) < (Double.valueOf(plugin.playerCalcValue.get(p)) * Double.valueOf(plugin.ticket_price))){
-                    p.sendMessage(plugin.prefix + "十分な所持金を持っていません");
-                    e.setCancelled(true);
-                    return;
-                }
-                if(plugin.playersInGame.size() > plugin.icons.size()){
-                    p.sendMessage(plugin.prefix + "満員です");
-                    return;
-                }
-                //bet
-                //bet
-                //bet
-                plugin.mysql.execute("insert into jackpot_bet values ('0','" + plugin.gameID + "','" + p.getUniqueId() + "','" + p.getName() + "','" + plugin.playerCalcValue.get(p) + "','" + plugin.ticket_price + "'," + plugin.currentTime() + ");");
-                plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
-                e.setCancelled(true);
-                return;
-            }
             if(e.getSlot() == 52 ){
                 e.getWhoClicked().closeInventory();
                 e.setCancelled(true);
@@ -150,6 +126,35 @@ public class Man10JackpotListener implements Listener {
             }
             if(plugin.playerCalcValue.get(p) == null){
                 plugin.playerCalcValue.put(p,"");
+            }
+            if(e.getSlot() == 50){
+                //bet button
+                if(plugin.playerCalcValue.get(p) == null || plugin.playerCalcValue.get(p).equalsIgnoreCase("")){
+                    p.sendMessage(plugin.prefix + "購入は1口以上からです");
+                    e.setCancelled(true);
+                    return;
+                }
+                if(plugin.vault.getBalance(p.getUniqueId()) < (Double.valueOf(plugin.playerCalcValue.get(p)) * Double.valueOf(plugin.ticket_price))){
+                    p.sendMessage(plugin.prefix + "十分な所持金を持っていません");
+                    e.setCancelled(true);
+                    return;
+                }
+                if(plugin.playersInGame.size() > plugin.icons.size()){
+                    p.sendMessage(plugin.prefix + "満員です");
+                    return;
+                }
+                //bet
+                //bet
+                //bet
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        plugin.mysql.execute("insert into jackpot_bet values ('0','" + plugin.gameID + "','" + p.getUniqueId() + "','" + p.getName() + "','" + plugin.playerCalcValue.get(p) + "','" + plugin.ticket_price + "'," + plugin.currentTime() + ");");
+                    }
+                }).start();
+                plugin.placeBet(p, Double.parseDouble(plugin.playerCalcValue.get(p)));
+                e.setCancelled(true);
+                return;
             }
             if(e.getInventory().getItem(0) != null){
                 p.sendMessage(plugin.prefix + "掛け金の上限です");
