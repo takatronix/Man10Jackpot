@@ -102,12 +102,9 @@ public class Man10JackpotRunnable {
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
                         double winRate = (bet.amount/plugin.totalBetInt)*100;
                         double payout = plugin.totalBet.getBalance() * ((100 - plugin.tax)/100);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                plugin.mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + plugin.gameID + "';");
-                                plugin.mysql.execute("insert into jackpot_game values ('0','" + plugin.gameID + "','" + plugin.totalBetInt + "','" + plugin.ticket_price + "','" + bet.name + "','" + bet.uuid + "'," + plugin.starttime + "," + plugin.currentTime() + ",'end');");
-                            }
+                        new Thread(() -> {
+                            plugin.mysql.execute("DELETE FROM jackpot_game WHERE game_id = '" + plugin.gameID + "';");
+                            plugin.mysql.execute("insert into jackpot_game values ('0','" + plugin.gameID + "','" + plugin.totalBetInt + "','" + plugin.ticket_price + "','" + bet.name + "','" + bet.uuid + "'," + plugin.starttime + "," + plugin.currentTime() + ",'end');");
                         }).start();
                         for(Player p : Bukkit.getOnlinePlayers()){
                             if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){
@@ -118,6 +115,7 @@ public class Man10JackpotRunnable {
                             }
                         }
                        plugin.vault.transferMoneyPoolToPlayer(plugin.totalBet.getId(), plugin.idToUUID.get(record[0]),payout, TransactionCategory.GAMBLE, TransactionType.WIN, "Man10Jackpot WInner Payout Price:" + String.valueOf(payout));
+                        plugin.vault.transferMoneyPoolToCountry(plugin.totalBet.getId(), plugin.totalBet.getCurrentBalance() - payout, TransactionCategory.TAX, TransactionType.PAY, "Man10Jackpot Winner Payout Tax");
                         for(Player p : Bukkit.getOnlinePlayers()){
                             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
                         }

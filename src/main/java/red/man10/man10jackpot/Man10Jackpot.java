@@ -171,7 +171,7 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ "bet:" + String.valueOf(ticket_price * amount));
+            totalBet.transferMoneyPlayerToPool(p.getUniqueId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
             p.sendMessage(prefix + "ベットしました");
             refreshPercentage();
             refreshMenu();
@@ -203,7 +203,7 @@ public final class Man10Jackpot extends JavaPlugin {
             totalBetInt++;
         }
         startTimer(playersInGame.size());
-        vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ "bet:" + String.valueOf(ticket_price * amount));
+        vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
         refreshPercentage();
         refreshMenu();
         openMainMenuForPlayer(p);

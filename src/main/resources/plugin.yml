@@ -4,7 +4,7 @@ main: red.man10.man10jackpot.Man10Jackpot
 authors: [Sho0]
 description: Man10Jackpot plugin
 website: man10.red
-depend: [Essentials]
+depend: [Essentials, Man10VaultAPIPlus]
 commands:
  mjackpot:
  mj:
