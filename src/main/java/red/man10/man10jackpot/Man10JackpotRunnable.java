@@ -8,6 +8,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import red.man10.man10vaultapiplus.enums.TransactionCategory;
+import red.man10.man10vaultapiplus.enums.TransactionType;
 
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
@@ -33,8 +35,7 @@ public class Man10JackpotRunnable {
                 if(plugin.time == 0){
                     cancel();
                     plugin.inGame = true;
-                    plugin.totalBet = plugin.totalBetInt * plugin.ticket_price;
-                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + Double.valueOf(plugin.totalBet) + "§5§kA");
+                    plugin.gameMenu = Bukkit.createInventory(null,54,"§5§kA§c§l優勝賞金:$" + Double.valueOf(plugin.totalBet.getBalance()) + "§5§kA");
                     plugin.menu.setUpGameMenu();
                     plugin.openSpinMenuForPlayer();
                     return;
@@ -100,7 +101,7 @@ public class Man10JackpotRunnable {
                         plugin.inGame = false;
                         Man10Jackpot.BetInfo bet = plugin.UUIDToBetInfo.get(plugin.idToUUID.get(record[0]));
                         double winRate = (bet.amount/plugin.totalBetInt)*100;
-                        double payout = plugin.totalBet * ((100 - plugin.tax)/100);
+                        double payout = plugin.totalBet.getBalance() * ((100 - plugin.tax)/100);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -111,12 +112,12 @@ public class Man10JackpotRunnable {
                         for(Player p : Bukkit.getOnlinePlayers()){
                             if(!p.getUniqueId().toString().equalsIgnoreCase(bet.uuid.toString())){
                                 //p.sendMessage(plugin.prefix + bet.name + "さんが" + plugin.round(winRate,2) + "%の確立で" + Double.valueOf(plugin.totalBet) + "円を勝ち取りました");
-                                p.sendMessage(plugin.loser_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
+                                p.sendMessage(plugin.loser_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet.getBalance()))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
                             }else{
-                                p.sendMessage(plugin.winner_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
+                                p.sendMessage(plugin.winner_broadcast.replaceAll("&","§").replaceAll("%AMOUNT%", String.valueOf(Double.valueOf(plugin.totalBet.getBalance()))).replaceAll("%TAXED%", String.valueOf(payout)).replaceAll("%WINNER%", bet.name).replaceAll("%PERCENTAGE%", String.valueOf(plugin.round(winRate,2))));
                             }
                         }
-                       plugin.vault.deposit(plugin.idToUUID.get(record[0]),payout);
+                       plugin.vault.transferMoneyPoolToPlayer(plugin.totalBet.getId(), plugin.idToUUID.get(record[0]),payout, TransactionCategory.GAMBLE, TransactionType.WIN, "Man10Jackpot WInner Payout Price:" + String.valueOf(payout));
                         for(Player p : Bukkit.getOnlinePlayers()){
                             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
                         }

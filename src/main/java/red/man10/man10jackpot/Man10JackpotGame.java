@@ -20,7 +20,7 @@ public class Man10JackpotGame {
     }
 
     public Inventory setUpMainInv(Player p){
-        Inventory inv = Bukkit.createInventory(null,54,"§c§l現在ベット:$" + Double.valueOf(plugin.totalBet));
+        Inventory inv = Bukkit.createInventory(null,54,"§c§l現在ベット:$" + Double.valueOf(plugin.totalBet.getBalance()));
         ItemStack greyGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 15);
         ItemMeta greyMeta = greyGlass.getItemMeta();
         greyMeta.setDisplayName(" ");
