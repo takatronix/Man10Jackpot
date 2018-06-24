@@ -64,7 +64,7 @@ public class Man10JackpotRunnable {
                 }
                 plugin.time--;
             }
-        }.runTaskTimer(plugin,0,2);
+        }.runTaskTimer(plugin,0,20);
     }
 
     public void onSpin(){
