@@ -64,7 +64,7 @@ public class Man10JackpotRunnable {
                 }
                 plugin.time--;
             }
-        }.runTaskTimer(plugin,0,20);
+        }.runTaskTimer(plugin,0,2);
     }
 
     public void onSpin(){
@@ -115,26 +115,24 @@ public class Man10JackpotRunnable {
                             }
                         }
                        plugin.vault.transferMoneyPoolToPlayer(plugin.totalBet.getId(), plugin.idToUUID.get(record[0]),payout, TransactionCategory.GAMBLE, TransactionType.WIN, "Man10Jackpot WInner Payout Price:" + String.valueOf(payout));
-                        plugin.vault.transferMoneyPoolToCountry(plugin.totalBet.getId(), plugin.totalBet.getCurrentBalance() - payout, TransactionCategory.TAX, TransactionType.PAY, "Man10Jackpot Winner Payout Tax");
                         for(Player p : Bukkit.getOnlinePlayers()){
                             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
                         }
-                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                            public void run() {
-                                for(int i = 0; i < plugin.playersInGame.size(); i++){
-                                    Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
-                                    if(p != null){
-                                        p.closeInventory();
-                                    }
+                        plugin.totalBet.sendRemainderToCountry("Man10Jackpot Winner Tax");
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                            for(int i = 0; i < plugin.playersInGame.size(); i++){
+                                Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
+                                if(p != null){
+                                    p.closeInventory();
                                 }
-                                for(int i = 0; i < plugin.playersInGame.size(); i++){
-                                    Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
-                                    if(p != null){
-                                        p.closeInventory();
-                                    }
-                                }
-                                plugin.refreshGame(true);
                             }
+                            for(int i = 0; i < plugin.playersInGame.size(); i++){
+                                Player p = Bukkit.getPlayer(plugin.playersInGame.get(i));
+                                if(p != null){
+                                    p.closeInventory();
+                                }
+                            }
+                            plugin.refreshGame(true);
                         },60);
                         return;
                     }

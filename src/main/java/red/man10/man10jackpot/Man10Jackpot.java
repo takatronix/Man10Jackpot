@@ -66,7 +66,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10VaultAPI vault = null;
 
     public int ticket_price = 0;
-    public MoneyPoolObject totalBet = new MoneyPoolObject("Man10Jackpot", MoneyPoolTerm.SHORT_TERM, MoneyPoolType.GAMBLE_POOL, "Man10Jackpot Betting Pool");
+    public MoneyPoolObject totalBet = null;
     public int gameID = 0;
 
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
@@ -152,6 +152,9 @@ public final class Man10Jackpot extends JavaPlugin {
             ";";
 
     public void placeBet(Player p,double amount){
+        if(totalBet == null){
+            totalBet = new MoneyPoolObject("Man10Jackpot", MoneyPoolTerm.SHORT_TERM, MoneyPoolType.GAMBLE_POOL, "Man10Jackpot Betting Pool");
+        }
         if(playerUUIDInGame.contains(p.getUniqueId())){
             BetInfo getBet = UUIDToBetInfo.get(p.getUniqueId());
             ItemStack itemt = idToItem.get(UUIDToId.get(p.getUniqueId()));
@@ -171,8 +174,9 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            totalBet.transferMoneyPlayerToPool(p.getUniqueId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
+            vault.transferMoneyPlayerToPool(p.getUniqueId(), totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
             p.sendMessage(prefix + "ベットしました");
+
             refreshPercentage();
             refreshMenu();
             openMainMenuForPlayer(p);
@@ -202,8 +206,8 @@ public final class Man10Jackpot extends JavaPlugin {
             chanceInGame.add(amountOfPlayer + 1);
             totalBetInt++;
         }
+        vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
         startTimer(playersInGame.size());
-        vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), Double.valueOf(ticket_price * amount), TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
         refreshPercentage();
         refreshMenu();
         openMainMenuForPlayer(p);
@@ -291,7 +295,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public void refreshGame(boolean createNew){
         totalBetInt = 0;
-        totalBet = new MoneyPoolObject("Man10Jackpot", MoneyPoolTerm.SHORT_TERM, MoneyPoolType.GAMBLE_POOL, "Man10Jackpot Betting Pool");
+        totalBet = null;
         playersInGame.clear();
         playersInMenu.clear();
         chanceInGame.clear();
