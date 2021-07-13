@@ -4,7 +4,7 @@ main: red.man10.man10jackpot.Man10Jackpot
 authors: [Sho0,takatronix]
 description: Man10Jackpot plugin
 website: man10.red
-depend: [vault]
+depend: [Vault]
 commands:
  mjackpot:
  mj:
