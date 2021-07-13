@@ -21,13 +21,16 @@ public class Man10JackpotGame {
 
     public Inventory setUpMainInv(Player p){
         String num = "";
+        /*
         if( plugin.totalBet == null){
             num = "0";
         }else{
             num = String.valueOf(plugin.totalBet.getBalance());
         }
+        */
+
         Inventory inv = Bukkit.createInventory(null,54,"§c§l現在ベット:$" +num);
-        ItemStack greyGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 15);
+        ItemStack greyGlass = new ItemStack(Material.BLUE_STAINED_GLASS,1,(short) 15);
         ItemMeta greyMeta = greyGlass.getItemMeta();
         greyMeta.setDisplayName(" ");
         greyGlass.setItemMeta(greyMeta);
@@ -41,7 +44,7 @@ public class Man10JackpotGame {
         buyTickets.setItemMeta(buyTicketsMeta);
         inv.setItem(49,buyTickets);
 
-        ItemStack clock = new ItemStack(Material.WATCH);
+        ItemStack clock = new ItemStack(Material.CLOCK);
         ItemMeta clockMeta = clock.getItemMeta();
         clockMeta.setDisplayName("§l残り時間");
         clock.setItemMeta(clockMeta);
@@ -53,7 +56,7 @@ public class Man10JackpotGame {
         info.setItemMeta(infoMeta);
         inv.setItem(51,info);
 
-        ItemStack leave = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 14);
+        ItemStack leave = new ItemStack(Material.BLUE_STAINED_GLASS,1,(short) 14);
         ItemMeta leaveMeta = leave.getItemMeta();
         leaveMeta.setDisplayName("§c§lメニューを閉じる");
         leave.setItemMeta(leaveMeta);

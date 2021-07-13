@@ -7,13 +7,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import red.man10.man10mysqlapi.MySQLAPI;
-import red.man10.man10vaultapiplus.Man10VaultAPI;
-import red.man10.man10vaultapiplus.MoneyPoolObject;
-import red.man10.man10vaultapiplus.enums.MoneyPoolTerm;
-import red.man10.man10vaultapiplus.enums.MoneyPoolType;
-import red.man10.man10vaultapiplus.enums.TransactionCategory;
-import red.man10.man10vaultapiplus.enums.TransactionType;
+import red.man10.MySQLManager;
+import red.man10.VaultManager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -41,7 +36,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public Man10JackpotListener listener = new Man10JackpotListener(this);
     public Man10JackpotMenu menu = new Man10JackpotMenu(this);
     public Man10JackpotIcons icon = new Man10JackpotIcons(this);
-    public MySQLAPI mysql = null;
+
 
     public List<Player> playersInMenu = new ArrayList<>();
     public List<UUID> playersInGame = new ArrayList<>();
@@ -63,10 +58,16 @@ public final class Man10Jackpot extends JavaPlugin {
     public HashMap<Player,String> playerCalcValue = new HashMap<>();
     public String starttime = null;
 
-    public Man10VaultAPI vault = null;
+
+    public MySQLManager mysql = null;
+    public VaultManager vault = null;
 
     public int ticket_price = 0;
-    public MoneyPoolObject totalBet = null;
+  //  public MoneyPoolObject totalBet = null;
+
+
+    public double totalBetPrice;
+
     public int gameID = 0;
 
     public String prefix = "§e§l[§c§lMJackpot§e§l]§f§l";
@@ -93,9 +94,9 @@ public final class Man10Jackpot extends JavaPlugin {
         timer_time = getConfig().getInt("timer");
         icon.setUpIcon();
         ticket_price = getConfig().getInt("ticket_price");
-        vault = new Man10VaultAPI("Man10Jackpot");
+        vault = new VaultManager(this);
         tax = getConfig().getInt("tax_percentage");
-        mysql = new MySQLAPI(this, "jackpot");
+        mysql = new MySQLManager(this,"man10juckpot");
         mysql.execute(gameTable);
         mysql.execute(betTable);
         refreshGame(true);
@@ -152,9 +153,7 @@ public final class Man10Jackpot extends JavaPlugin {
             ";";
 
     public void placeBet(Player p,double amount){
-        if(totalBet == null){
-            totalBet = new MoneyPoolObject("Man10Jackpot", MoneyPoolTerm.SHORT_TERM, MoneyPoolType.GAMBLE_POOL, "Man10Jackpot Betting Pool");
-        }
+
         if(playerUUIDInGame.contains(p.getUniqueId())){
             BetInfo getBet = UUIDToBetInfo.get(p.getUniqueId());
             ItemStack itemt = idToItem.get(UUIDToId.get(p.getUniqueId()));
@@ -174,7 +173,7 @@ public final class Man10Jackpot extends JavaPlugin {
             getBet.uuid = p.getUniqueId();
             getBet.name = p.getName();
             UUIDToBetInfo.put(p.getUniqueId(),getBet);
-            vault.transferMoneyPlayerToPool(p.getUniqueId(), totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
+//            vault.transferMoneyPlayerToPool(p.getUniqueId(), totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
             p.sendMessage(prefix + "ベットしました");
 
             refreshPercentage();
@@ -206,7 +205,7 @@ public final class Man10Jackpot extends JavaPlugin {
             chanceInGame.add(amountOfPlayer + 1);
             totalBetInt++;
         }
-        vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
+      //  vault.transferMoneyPlayerToPool(p.getUniqueId(),totalBet.getId(), ticket_price * amount, TransactionCategory.GAMBLE, TransactionType.BET, "Man10Jackpot User:" + p.getName()+ " bet:" + String.valueOf(ticket_price * amount));
         startTimer(playersInGame.size());
         refreshPercentage();
         refreshMenu();
@@ -295,7 +294,7 @@ public final class Man10Jackpot extends JavaPlugin {
 
     public void refreshGame(boolean createNew){
         totalBetInt = 0;
-        totalBet = null;
+
         playersInGame.clear();
         playersInMenu.clear();
         chanceInGame.clear();
@@ -329,7 +328,7 @@ public final class Man10Jackpot extends JavaPlugin {
     public void cancelGame (boolean createNew){
         for(int i = 0; i < playersInGame.size(); i++){
             OfflinePlayer p = Bukkit.getOfflinePlayer(playersInGame.get(i));
-            totalBet.transferBalanceToPlayer(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price, TransactionCategory.GAMBLE, TransactionType.CANCEL, "Man10Jackpot Game Cancel Payout user:" + Bukkit.getOfflinePlayer(playersInGame.get(i)).getName()  + " value :" + String.valueOf( UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price));
+        //    totalBet.transferBalanceToPlayer(p.getUniqueId(),UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price, TransactionCategory.GAMBLE, TransactionType.CANCEL, "Man10Jackpot Game Cancel Payout user:" + Bukkit.getOfflinePlayer(playersInGame.get(i)).getName()  + " value :" + String.valueOf( UUIDToBetInfo.get(p.getUniqueId()).amount * ticket_price));
         }
         for(int i = 0; i < playersInGame.size(); i++){
             Player p = Bukkit.getPlayer(playersInGame.get(i));

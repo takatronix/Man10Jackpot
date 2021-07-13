@@ -1,5 +1,5 @@
 name: Man10Jackpot
-version: ${project.version}
+version: 1.0-SNAPSHOT
 main: red.man10.man10jackpot.Man10Jackpot
 authors: [Sho0,takatronix]
 description: Man10Jackpot plugin

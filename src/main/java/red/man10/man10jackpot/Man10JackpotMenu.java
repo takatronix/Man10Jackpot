@@ -141,8 +141,8 @@ public class Man10JackpotMenu {
 
     public void setUpGameMenu(){
         Inventory inv = plugin.gameMenu;
-        ItemStack redGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 14);
-        ItemStack greyGlass = new ItemStack(Material.STAINED_GLASS_PANE,1,(short) 15);
+        ItemStack redGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE,1,(short) 14);
+        ItemStack greyGlass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE,1,(short) 15);
         ItemMeta greyMeta = greyGlass.getItemMeta();
         greyMeta.setDisplayName(" ");
         greyGlass.setItemMeta(greyMeta);

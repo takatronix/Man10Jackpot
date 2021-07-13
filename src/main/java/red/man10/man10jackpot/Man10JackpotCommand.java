@@ -5,9 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import red.man10.man10jackpot.Man10Jackpot;
-import red.man10.man10mysqlapi.MySQLAPI;
+import red.man10.MySQLManager;
 
 import java.awt.font.NumericShaper;
 
@@ -79,7 +77,7 @@ public class Man10JackpotCommand implements CommandExecutor {
                 plugin.timer_time = plugin.getConfig().getInt("timer");
                 plugin.winner_broadcast = plugin.getConfig().getString("winner_broadcast");
                 plugin.loser_broadcast = plugin.getConfig().getString("loser_broadcast");
-                plugin.mysql = new MySQLAPI(plugin, "jackpot");
+                plugin.mysql = new MySQLManager(this.plugin,"man10juckpot");
                 plugin.time = plugin.timer_time;
                 p.sendMessage(plugin.prefix + "リロードが完了しました");
                 return true;
