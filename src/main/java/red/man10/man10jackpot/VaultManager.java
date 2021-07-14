@@ -68,6 +68,15 @@ public class VaultManager {
         double money = getBalance(uuid);
         p.getPlayer().sendMessage(ChatColor.YELLOW + "あなたの所持金は$" + money);
     }
+
+    // 1,000のような金額文字列を返す
+    public String getBalanceString(UUID uuid){
+        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
+        double balance = getBalance(uuid);
+        return String.format("%,d", (long)balance);
+    }
+
+
     /////////////////////////////////////
     //      引き出し
     /////////////////////////////////////
