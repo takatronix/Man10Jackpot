@@ -36,8 +36,8 @@ public class Man10JackpotMenu {
         ItemStack i8 = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/abc0fda9fa1d9847a3b146454ad6737ad1be48bdaa94324426eca0918512d").build();
         ItemStack i9 = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/d6abc61dcaefbd52d9689c0697c24c7ec4bc1afb56b8b3755e6154b24a5d8ba").build();
         ItemStack b = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/9eca98befd0d7efca9b11ebf4b2da459cc19a378114b3cdde67d4067afb896").withName("§7§lBET").build();
-        ItemStack e = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/dbb2737ecbf910efe3b267db7d4b327f360abc732c77bd0e4eff1d510cdef").withName("§7§lBET").build();
-        ItemStack t = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/1562e8c1d66b21e459be9a24e5c027a34d269bdce4fbee2f7678d2d3ee4718").withName("§7§lBET").build();
+        ItemStack e = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/ced9f431a997fce0d8be1844f62090b1783ac569c9d2797528349d37c215fcc").withName("§7§lBET").build();
+        ItemStack t = new SkullMaker().withSkinUrl("http://textures.minecraft.net/texture/fc2fcbc24e7382ac112bb2c0d5eca27e9f48ffca5a157e502617a96d636f5c3").withName("§7§lBET").build();
         ItemStack cancel = new ItemStack(Material.REDSTONE_BLOCK, 1);
         ItemStack Accept = new ItemStack(Material.EMERALD_BLOCK, 1);
         ItemStack clear = new ItemStack(Material.TNT, 1);
