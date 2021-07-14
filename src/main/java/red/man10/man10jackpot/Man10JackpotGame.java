@@ -56,9 +56,10 @@ public class Man10JackpotGame {
         info.setItemMeta(infoMeta);
         inv.setItem(51,info);
 
-        ItemStack leave = new ItemStack(Material.BLUE_STAINED_GLASS,1,(short) 14);
+        ItemStack leave = new ItemStack(Material.RED_STAINED_GLASS,1,(short) 14);
         ItemMeta leaveMeta = leave.getItemMeta();
         leaveMeta.setDisplayName("§c§lメニューを閉じる");
+
         leave.setItemMeta(leaveMeta);
         inv.setItem(53,leave);
 
