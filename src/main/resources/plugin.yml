@@ -5,6 +5,7 @@ authors: [Sho0,takatronix]
 description: Man10Jackpot plugin
 website: man10.red
 depend: [Vault]
+api-version: 1.17
 commands:
  mjackpot:
  mj:

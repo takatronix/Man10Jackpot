@@ -57,7 +57,7 @@ public class SkullMaker {
     }
 
     public ItemStack build() {
-        ItemStack item = new ItemStack(Material.LEGACY_SKULL_ITEM, amount, (short) 3);
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, amount, (short) 3);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         if (owner != null) {
             meta.setOwner(owner);
